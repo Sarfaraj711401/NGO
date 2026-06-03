@@ -21,6 +21,11 @@ import MembersTable from "./AsthaDidiTable";
 
 const AccountTab = () => {
   const location = useLocation();
+  const sidebarRole = useMemo(() => {
+    const params = new URLSearchParams(location.search || "");
+    return params.get("role");
+  }, [location.search]);
+  const isSidebarLocked = !!sidebarRole;
   const [appUserRole, setAppUserRole] = useState(null);
   const [loggedInProfileId, setLoggedInProfileId] = useState(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -361,6 +366,7 @@ const AccountTab = () => {
     }
   }, [location.search]);
 
+  if (!location) return null;
   if (appUserRole === null)
     return <div style={{ padding: "24px" }}>Loading Interface...</div>;
 
@@ -404,7 +410,7 @@ const AccountTab = () => {
           alignItems: "flex-end",
         }}
       >
-        <div style={{ width: "100%", maxWidth: "250px" }}>
+        {/* <div style={{ width: "100%", maxWidth: "250px" }}>
           <label
             style={{ ...styles.label, marginBottom: "8px", display: "block" }}
           >
@@ -425,7 +431,34 @@ const AccountTab = () => {
             menuPosition="fixed"
             isSearchable={false}
           />
+        </div> */}
+
+
+        <div style={{ width: "100%", maxWidth: "250px" }}>
+          <label
+            style={{ ...styles.label, marginBottom: "8px", display: "block" }}
+          >
+            Select Role Entry / View <span style={{ color: "#ff3e1d" }}>*</span>
+          </label>
+
+          <Select
+            options={adminOptions}
+            value={adminOptions.find((o) => o.value === adminActiveView)}
+            onChange={(s) => {
+              setAdminActiveView(s.value);
+              handleReset(0);
+            }}
+            isDisabled={isSidebarLocked}
+            styles={{
+              ...styles.selectStyles(false),
+              menuPortal: (base) => ({ ...base, zIndex: 99999 }),
+            }}
+            menuPortalTarget={document.body}
+            menuPosition="fixed"
+            isSearchable={false}
+          />
         </div>
+
 
         {isMotherNgoVisible && (
           <div style={{ width: "100%", maxWidth: "200px" }}>
