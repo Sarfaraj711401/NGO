@@ -161,18 +161,21 @@ const Sidebar = () => {
         </li>
 
         <div style={styles.subMenuContainer(isAccountMenuOpen)}>
-          <NavLink to="/account-settings/account" style={styles.link}>
+          {/* <NavLink to="/account-settings/account" style={styles.link}>
             {({ isActive }) => (
               <li style={styles.subMenuItem(isActive)}>
                 <div style={styles.subMenuDot(isActive)}></div> Profile Entry
               </li>
             )}
-          </NavLink>
+          </NavLink> */}
         </div>
 
         {/* DISTRICT ADMINISTRATOR */}
         {isStateSuperAdmin && (
-          <NavLink to="/district-administrator" style={styles.link}>
+          <NavLink
+            to="/account-settings/account?role=District Administrator"
+            style={styles.link}
+          >
             {({ isActive }) => (
               <li style={styles.menuItem(isActive)}>
                 <div style={styles.menuItemLeft}>
@@ -186,7 +189,10 @@ const Sidebar = () => {
 
         {/* SUPERVISOR */}
         {(isStateSuperAdmin || isDistrictAdmin) && (
-          <NavLink to="/supervisor" style={styles.link}>
+          <NavLink
+            to="/account-settings/account?role=Supervisor"
+            style={styles.link}
+          >
             {({ isActive }) => (
               <li style={styles.menuItem(isActive)}>
                 <div style={styles.menuItemLeft}>
@@ -200,7 +206,10 @@ const Sidebar = () => {
 
         {/* ASTHA DIDI */}
         {(isStateSuperAdmin || isDistrictAdmin || isSupervisor) && (
-          <NavLink to="/astha-didi" style={styles.link}>
+          <NavLink
+            to="/account-settings/account?role=Astha Didi"
+            style={styles.link}
+          >
             {({ isActive }) => (
               <li style={styles.menuItem(isActive)}>
                 <div style={styles.menuItemLeft}>
@@ -219,7 +228,8 @@ const Sidebar = () => {
           isSupervisor ||
           isAsthaDidi
         ) && (
-            <NavLink to="/astha-maa" style={styles.link}>
+            <NavLink
+              to="/account-settings/account?role=Astha Maa" style={styles.link} >
               {({ isActive }) => (
                 <li style={styles.menuItem(isActive)}>
                   <div style={styles.menuItemLeft}>

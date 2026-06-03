@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import Select from "react-select";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -19,6 +20,7 @@ import AsthaMaaTable from "./AsthaMaaTable";
 import MembersTable from "./AsthaDidiTable";
 
 const AccountTab = () => {
+  const location = useLocation();
   const [appUserRole, setAppUserRole] = useState(null);
   const [loggedInProfileId, setLoggedInProfileId] = useState(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -232,13 +234,13 @@ const AccountTab = () => {
       if (
         filterState &&
         sup.stateName?.trim().toLowerCase() !==
-          filterState.label.trim().toLowerCase()
+        filterState.label.trim().toLowerCase()
       )
         matches = false;
       if (
         filterDistrict &&
         sup.distName?.trim().toLowerCase() !==
-          filterDistrict.label.trim().toLowerCase()
+        filterDistrict.label.trim().toLowerCase()
       )
         matches = false;
       return matches;
@@ -261,13 +263,13 @@ const AccountTab = () => {
       if (
         filterState &&
         ad.stateName?.trim().toLowerCase() !==
-          filterState.label.trim().toLowerCase()
+        filterState.label.trim().toLowerCase()
       )
         matches = false;
       if (
         filterDistrict &&
         ad.distName?.trim().toLowerCase() !==
-          filterDistrict.label.trim().toLowerCase()
+        filterDistrict.label.trim().toLowerCase()
       )
         matches = false;
 
@@ -289,7 +291,7 @@ const AccountTab = () => {
           ad.createdByAuthRegId != null &&
           filterSupervisor.userSignUpId != null &&
           String(ad.createdByAuthRegId) ===
-            String(filterSupervisor.userSignUpId);
+          String(filterSupervisor.userSignUpId);
         if (!matchBySupRegId && !matchByCreator) matches = false;
       }
       return matches;
@@ -341,6 +343,23 @@ const AccountTab = () => {
   };
 
   const handleFormSuccess = () => setRefreshTrigger((prev) => prev + 1);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const role = params.get("role");
+
+    if (
+      role &&
+      [
+        "District Administrator",
+        "Supervisor",
+        "Astha Didi",
+        "Astha Maa",
+      ].includes(role)
+    ) {
+      setAdminActiveView(role);
+    }
+  }, [location.search]);
 
   if (appUserRole === null)
     return <div style={{ padding: "24px" }}>Loading Interface...</div>;
