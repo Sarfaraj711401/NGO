@@ -4,15 +4,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Select from "react-select";
 import { toast } from "react-toastify";
+
+// Import your newly separated CSS file
+import "./DistrictAdminForm.css";
+
 import {
   API_BASE_URL,
   indianPhoneRegex,
-  styles,
+  styles, // Retained solely for react-select usage
   FormInput,
   fileToBase64,
 } from "../../config/constants";
-import { getSafeUser, handleViewPdf } from "../AccountSharedUtils";
-import { validateUniqueFields } from "../AccountSharedUtils";
+import { getSafeUser, handleViewPdf, validateUniqueFields } from "../AccountSharedUtils";
 
 export const ngoSchema = z.object({
   ngoName: z.string().min(2, "NGO Name is required"),
@@ -59,21 +62,15 @@ const PasswordInput = ({
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   return (
-    <div style={styles.inputGroup}>
-      <label htmlFor={id} style={styles.label}>
+    <div className="input-group">
+      <label htmlFor={id} className="label">
         {label}
       </label>
-      <div
-        style={{ position: "relative", display: "flex", alignItems: "center" }}
-      >
+      <div className="password-wrapper">
         <input
           id={id}
           type={showPassword ? "text" : "password"}
-          style={
-            disabled
-              ? styles.inputDisabled
-              : { ...styles.input(!!error), paddingRight: "40px" }
-          }
+          className={`password-input ${disabled ? "disabled" : ""} ${error ? "error" : ""}`}
           placeholder={placeholder}
           disabled={disabled}
           {...props}
@@ -81,24 +78,12 @@ const PasswordInput = ({
         <button
           type="button"
           onClick={togglePasswordVisibility}
-          style={{
-            position: "absolute",
-            right: "10px",
-            background: "transparent",
-            border: "none",
-            cursor: "pointer",
-            color: "#697a8d",
-            fontSize: "1.2rem",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 0,
-          }}
+          className="password-toggle-btn"
         >
           {showPassword ? "👁️‍🗨️" : "👁️"}
         </button>
       </div>
-      {error && <p style={styles.errorText}>{error.message}</p>}
+      {error && <p className="error-text">{error.message}</p>}
     </div>
   );
 };
@@ -211,7 +196,6 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
   };
 
   const onSubmitDistrictAdmin = async (data) => {
-    // Made Darpan PDF optional here
     if (!regCertPdf || !panPdf) {
       toast.error(
         "Required: Please upload the mandatory documents (Reg Cert and PAN) before submitting.",
@@ -311,17 +295,17 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
     });
 
   return (
-    <div style={styles.card}>
-      <div style={styles.cardHeader}>
+    <div className="card">
+      <div className="card-header">
         <h5>District Administrator Registration</h5>
       </div>
-      <div style={styles.cardBody}>
+      <div className="card-body">
         <form
           onSubmit={handleSubmit(onSubmitDistrictAdmin, onError)}
           autoComplete="off"
         >
-          <h6 style={styles.sectionHeader}>NGO Details</h6>
-          <div style={styles.formGrid}>
+          <h6 className="section-header">NGO Details</h6>
+          <div className="form-grid">
             <Controller
               name="ngoName"
               control={control}
@@ -329,7 +313,7 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
                 <FormInput
                   label={
                     <>
-                      NGO Full Name <span style={{ color: "#ff3e1d" }}>*</span>
+                      NGO Full Name <span className="required-asterisk">*</span>
                     </>
                   }
                   id="ngoName"
@@ -347,7 +331,7 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
                   label={
                     <>
                       Date of NGO/ Trustee Registration{" "}
-                      <span style={{ color: "#ff3e1d" }}>*</span>
+                      <span className="required-asterisk">*</span>
                     </>
                   }
                   id="ngoRegistrationDate"
@@ -365,7 +349,7 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
                   label={
                     <>
                       NGO Registration No/ CIN / Trustee Deed No{" "}
-                      <span style={{ color: "#ff3e1d" }}>*</span>
+                      <span className="required-asterisk">*</span>
                     </>
                   }
                   id="ngoRegistrationNo"
@@ -382,7 +366,7 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
                 <FormInput
                   label={
                     <>
-                      NGO PAN No <span style={{ color: "#ff3e1d" }}>*</span>
+                      NGO PAN No <span className="required-asterisk">*</span>
                     </>
                   }
                   id="ngoPanNo"
@@ -426,7 +410,7 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
                 <FormInput
                   label={
                     <>
-                      NGO Mobile No <span style={{ color: "#ff3e1d" }}>*</span>
+                      NGO Mobile No <span className="required-asterisk">*</span>
                     </>
                   }
                   id="ngoMobile"
@@ -438,12 +422,12 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Address Details</h6>
-          <div style={styles.formGrid}>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>
+          <h6 className="section-header">Address Details</h6>
+          <div className="form-grid">
+            <div className="input-group">
+              <label className="label">
                 Willing to work State Name{" "}
-                <span style={{ color: "#ff3e1d" }}>*</span>
+                <span className="required-asterisk">*</span>
               </label>
               <Controller
                 name="state"
@@ -452,17 +436,18 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
                   <Select
                     {...field}
                     options={dbStates}
-                    styles={styles.selectStyles(!!errors.state)}
+                    classNamePrefix="react-select"
+                    styles={styles.selectStyles && styles.selectStyles(!!errors.state)}
                     placeholder="Select State"
                     isDisabled={!!defaultState}
                   />
                 )}
               />
             </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>
+            <div className="input-group">
+              <label className="label">
                 Willing to work which district Name{" "}
-                <span style={{ color: "#ff3e1d" }}>*</span>
+                <span className="required-asterisk">*</span>
               </label>
               <Controller
                 name="district"
@@ -471,7 +456,8 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
                   <Select
                     {...field}
                     options={dbDistricts}
-                    styles={styles.selectStyles(!!errors.district)}
+                    classNamePrefix="react-select"
+                    styles={styles.selectStyles && styles.selectStyles(!!errors.district)}
                     placeholder="Select District"
                     isDisabled={!selectedState || !!defaultDistrict}
                   />
@@ -485,8 +471,8 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
                 <FormInput
                   label={
                     <>
-                      Willing to work which Block Name{" "}
-                      <span style={{ color: "#ff3e1d" }}>
+                      Working Block Name{" "}
+                      <span className="required-asterisk">
                         * (Can type multiple)
                       </span>
                     </>
@@ -502,23 +488,18 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
               name="ngoRegAddress"
               control={control}
               render={({ field }) => (
-                <div style={{ ...styles.inputGroup, gridColumn: "1 / -1" }}>
-                  <label htmlFor="ngoRegAddress" style={styles.label}>
+                <div className="input-group full-width">
+                  <label htmlFor="ngoRegAddress" className="label">
                     NGO Register Address{" "}
-                    <span style={{ color: "#ff3e1d" }}>*</span>
+                    <span className="required-asterisk">*</span>
                   </label>
                   <textarea
                     id="ngoRegAddress"
-                    style={{
-                      ...styles.input(!!errors.ngoRegAddress),
-                      resize: "vertical",
-                      minHeight: "80px",
-                      backgroundColor: "#fff",
-                    }}
+                    className={`textarea-input ${errors.ngoRegAddress ? "error" : ""}`}
                     {...field}
                   />
                   {errors.ngoRegAddress && (
-                    <p style={styles.errorText}>
+                    <p className="error-text">
                       {errors.ngoRegAddress.message}
                     </p>
                   )}
@@ -529,23 +510,18 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
               name="ngoWorkingAddress"
               control={control}
               render={({ field }) => (
-                <div style={{ ...styles.inputGroup, gridColumn: "1 / -1" }}>
-                  <label htmlFor="ngoWorkingAddress" style={styles.label}>
+                <div className="input-group full-width">
+                  <label htmlFor="ngoWorkingAddress" className="label">
                     NGO Working office full address{" "}
-                    <span style={{ color: "#ff3e1d" }}>*</span>
+                    <span className="required-asterisk">*</span>
                   </label>
                   <textarea
                     id="ngoWorkingAddress"
-                    style={{
-                      ...styles.input(!!errors.ngoWorkingAddress),
-                      resize: "vertical",
-                      minHeight: "80px",
-                      backgroundColor: "#fff",
-                    }}
+                    className={`textarea-input ${errors.ngoWorkingAddress ? "error" : ""}`}
                     {...field}
                   />
                   {errors.ngoWorkingAddress && (
-                    <p style={styles.errorText}>
+                    <p className="error-text">
                       {errors.ngoWorkingAddress.message}
                     </p>
                   )}
@@ -554,8 +530,8 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Secretary Details</h6>
-          <div style={styles.formGrid}>
+          <h6 className="section-header">Secretary Details</h6>
+          <div className="form-grid">
             <Controller
               name="sdpName"
               control={control}
@@ -564,7 +540,7 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
                   label={
                     <>
                       Secretary/ Director/ President Full Name{" "}
-                      <span style={{ color: "#ff3e1d" }}>*</span>
+                      <span className="required-asterisk">*</span>
                     </>
                   }
                   id="sdpName"
@@ -582,7 +558,7 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
                   label={
                     <>
                       Secretary/ Director/ President Email ID{" "}
-                      <span style={{ color: "#ff3e1d" }}>*</span>
+                      <span className="required-asterisk">*</span>
                     </>
                   }
                   id="secretaryEmail"
@@ -600,7 +576,7 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
                   label={
                     <>
                       Secretary/ Director/ President Mobile No{" "}
-                      <span style={{ color: "#ff3e1d" }}>*</span>
+                      <span className="required-asterisk">*</span>
                     </>
                   }
                   id="secretaryMobile"
@@ -618,7 +594,7 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
                   label={
                     <>
                       Secretary/ Director Aadhaar Card Number{" "}
-                      <span style={{ color: "#ff3e1d" }}>*</span>
+                      <span className="required-asterisk">*</span>
                     </>
                   }
                   id="secretaryAadhar"
@@ -631,8 +607,8 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Login & Account Setup</h6>
-          <div style={styles.formGrid}>
+          <h6 className="section-header">Login & Account Setup</h6>
+          <div className="form-grid">
             <Controller
               name="userName"
               control={control}
@@ -640,7 +616,7 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
                 <FormInput
                   label={
                     <>
-                      User Name <span style={{ color: "#ff3e1d" }}>*</span>
+                      User Name <span className="required-asterisk">*</span>
                     </>
                   }
                   id="userName"
@@ -660,7 +636,7 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
                   label={
                     <>
                       Email ID (For Login){" "}
-                      <span style={{ color: "#ff3e1d" }}>*</span>
+                      <span className="required-asterisk">*</span>
                     </>
                   }
                   id="ngoEmail"
@@ -679,7 +655,7 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
                   label={
                     <>
                       Set New Password{" "}
-                      <span style={{ color: "#ff3e1d" }}>
+                      <span className="required-asterisk">
                         * (Don't forget it!)
                       </span>
                     </>
@@ -693,9 +669,8 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Banking & Account Setup</h6>
-          <div style={styles.formGrid}>
-            {/* Removed the * required indicator from Banking fields */}
+          <h6 className="section-header">Banking & Account Setup</h6>
+          <div className="form-grid">
             <Controller
               name="bankAccountHolderName"
               control={control}
@@ -763,151 +738,90 @@ const DistrictAdminForm = ({ onSuccess, defaultState, defaultDistrict }) => {
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Documents</h6>
-          <div style={styles.formGrid}>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>
-                Reg Cert PDF <span style={{ color: "#ff3e1d" }}>*</span>
+          <h6 className="section-header">Documents</h6>
+          <div className="form-grid">
+            <div className="input-group">
+              <label className="label">
+                Reg Cert PDF <span className="required-asterisk">*</span>
               </label>
               <input
                 type="file"
                 accept="application/pdf"
                 onChange={(e) => handlePdfUpload(e, setRegCertPdf)}
-                style={styles.input(false)}
+                className="file-input"
               />
               {regCertPdf && (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginTop: "8px",
-                  }}
-                >
+                <div className="pdf-preview-row">
                   <button
                     type="button"
                     onClick={() => handleViewPdf(regCertPdf)}
-                    style={{
-                      ...styles.btnOutline,
-                      padding: "4px 8px",
-                      fontSize: "0.85rem",
-                    }}
+                    className="btn-outline pdf-preview-btn"
                   >
                     👁️ Preview PDF
                   </button>
-                  <span
-                    style={{
-                      ...styles.hintText,
-                      color: "#71dd37",
-                      marginLeft: "10px",
-                      marginBottom: 0,
-                    }}
-                  >
-                    ✅ Ready
-                  </span>
+                  <span className="pdf-ready-text">✅ Ready</span>
                 </div>
               )}
             </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>
-                NGO PAN PDF <span style={{ color: "#ff3e1d" }}>*</span>
+            <div className="input-group">
+              <label className="label">
+                NGO PAN PDF <span className="required-asterisk">*</span>
               </label>
               <input
                 type="file"
                 accept="application/pdf"
                 onChange={(e) => handlePdfUpload(e, setPanPdf)}
-                style={styles.input(false)}
+                className="file-input"
               />
               {panPdf && (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginTop: "8px",
-                  }}
-                >
+                <div className="pdf-preview-row">
                   <button
                     type="button"
                     onClick={() => handleViewPdf(panPdf)}
-                    style={{
-                      ...styles.btnOutline,
-                      padding: "4px 8px",
-                      fontSize: "0.85rem",
-                    }}
+                    className="btn-outline pdf-preview-btn"
                   >
                     👁️ Preview PDF
                   </button>
-                  <span
-                    style={{
-                      ...styles.hintText,
-                      color: "#71dd37",
-                      marginLeft: "10px",
-                      marginBottom: 0,
-                    }}
-                  >
-                    ✅ Ready
-                  </span>
+                  <span className="pdf-ready-text">✅ Ready</span>
                 </div>
               )}
             </div>
-            <div style={styles.inputGroup}>
-              {/* Removed the * required indicator from Darpan PDF */}
-              <label style={styles.label}>Darpan PDF</label>
+            <div className="input-group">
+              <label className="label">Darpan PDF</label>
               <input
                 type="file"
                 accept="application/pdf"
                 onChange={(e) => handlePdfUpload(e, setDarpanPdf)}
-                style={styles.input(false)}
+                className="file-input"
               />
               {darpanPdf && (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginTop: "8px",
-                  }}
-                >
+                <div className="pdf-preview-row">
                   <button
                     type="button"
                     onClick={() => handleViewPdf(darpanPdf)}
-                    style={{
-                      ...styles.btnOutline,
-                      padding: "4px 8px",
-                      fontSize: "0.85rem",
-                    }}
+                    className="btn-outline pdf-preview-btn"
                   >
                     👁️ Preview PDF
                   </button>
-                  <span
-                    style={{
-                      ...styles.hintText,
-                      color: "#71dd37",
-                      marginLeft: "10px",
-                      marginBottom: 0,
-                    }}
-                  >
-                    ✅ Ready
-                  </span>
+                  <span className="pdf-ready-text">✅ Ready</span>
                 </div>
               )}
             </div>
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: "16px",
-              marginTop: "32px",
-            }}
-          >
+          <div className="form-actions">
             <button
               type="button"
-              style={styles.btnOutline}
+              className="btn-primary"
               onClick={handleCancel}
             >
               Cancel
             </button>
-            <button type="submit" style={styles.btnPrimary}>
+
+            <button
+              type="submit"
+              className="btn-primary"
+            >
               Submit
             </button>
           </div>

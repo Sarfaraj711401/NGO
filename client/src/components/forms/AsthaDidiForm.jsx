@@ -4,12 +4,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Select from "react-select";
 import { toast } from "react-toastify";
+
+// Import your newly separated CSS file
+import "./AsthaDidiForm.css";
+
 import {
   API_BASE_URL,
   DUMMY_AVATAR,
   indianZipRegex,
   indianPhoneRegex,
-  styles,
+  styles, // Keeping this ONLY if react-select uses styles.selectStyles internally
   FormInput,
 } from "../../config/constants";
 import { validateUniqueFields } from "../AccountSharedUtils";
@@ -73,21 +77,15 @@ const PasswordInput = ({
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   return (
-    <div style={styles.inputGroup}>
-      <label htmlFor={id} style={styles.label}>
+    <div className="input-group">
+      <label htmlFor={id} className="label">
         {label}
       </label>
-      <div
-        style={{ position: "relative", display: "flex", alignItems: "center" }}
-      >
+      <div className="password-wrapper">
         <input
           id={id}
           type={showPassword ? "text" : "password"}
-          style={
-            disabled
-              ? styles.inputDisabled
-              : { ...styles.input(!!error), paddingRight: "40px" }
-          }
+          className={`password-input ${disabled ? "disabled" : ""} ${error ? "error" : ""}`}
           placeholder={placeholder}
           disabled={disabled}
           {...props}
@@ -95,25 +93,13 @@ const PasswordInput = ({
         <button
           type="button"
           onClick={togglePasswordVisibility}
-          style={{
-            position: "absolute",
-            right: "10px",
-            background: "transparent",
-            border: "none",
-            cursor: "pointer",
-            color: "#697a8d",
-            fontSize: "1.2rem",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 0,
-          }}
+          className="password-toggle-btn"
           title={showPassword ? "Hide password" : "Show password"}
         >
           {showPassword ? "👁️‍🗨️" : "👁️"}
         </button>
       </div>
-      {error && <p style={styles.errorText}>{error.message}</p>}
+      {error && <p className="error-text">{error.message}</p>}
     </div>
   );
 };
@@ -127,7 +113,6 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
   const [profileImage, setProfileImage] = useState(DUMMY_AVATAR);
   const fileInputRef = useRef(null);
 
-  // ✅ FIXED: Using inclusive hierarchy validation
   const [isFormAllowed, setIsFormAllowed] = useState(false);
   const [isStrictSupervisor, setIsStrictSupervisor] = useState(false);
 
@@ -186,16 +171,15 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
           role === "supervisor" || signUpRole === "supervisor",
         );
 
-        // ✅ FIXED: Form is allowed for State Super Admin, Developer, District Admin, and Supervisor
         setIsFormAllowed(
           role === "supervisor" ||
-            signUpRole === "supervisor" ||
-            role === "district administrator" ||
-            signUpRole === "district administrator" ||
-            role === "state super administrator" ||
-            signUpRole === "state super administrator" ||
-            role === "developer" ||
-            signUpRole === "developer",
+          signUpRole === "supervisor" ||
+          role === "district administrator" ||
+          signUpRole === "district administrator" ||
+          role === "state super administrator" ||
+          signUpRole === "state super administrator" ||
+          role === "developer" ||
+          signUpRole === "developer",
         );
       } catch (e) {
         console.error("Error parsing loggedInUser from localStorage", e);
@@ -290,6 +274,7 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
         idValue: null,
       },
     ];
+
     if (data.aadharNo) {
       checks.push({
         table: "asthadidi_reg",
@@ -314,9 +299,9 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
       const gpCount = allDidis.filter(
         (d) =>
           d.AsthaDidiBlockName?.trim().toLowerCase() ===
-            data.block.trim().toLowerCase() &&
+          data.block.trim().toLowerCase() &&
           d.AsthaDidiGramPanchayet?.trim().toLowerCase() ===
-            data.gramPanchayet.trim().toLowerCase() &&
+          data.gramPanchayet.trim().toLowerCase() &&
           String(d.AsthaDidiIsActive) !== "0",
       ).length;
 
@@ -426,25 +411,17 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
       position: "top-right",
     });
 
-  // ✅ FIXED: Evaluates true for Super Admin as long as they pick a Supervisor from the external filter
   const isFormEnabled =
     isFormAllowed && (isStrictSupervisor ? true : !!filterSupervisor);
 
   return (
-    <div style={styles.card}>
-      <div style={styles.cardHeader}>
+    <div className="card">
+      <div className="card-header">
         <h5>Astha Didi Registration</h5>
       </div>
 
       {!isFormAllowed && (
-        <div
-          style={{
-            padding: "12px 24px",
-            backgroundColor: "#f8d7da",
-            color: "#721c24",
-            borderBottom: "1px solid #f5c6cb",
-          }}
-        >
+        <div className="alert-danger">
           <strong>Access Denied:</strong> Only a user with the correct
           Administrative role can submit this form. Your current role does not
           permit this action.
@@ -452,40 +429,27 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
       )}
 
       {isFormAllowed && !isStrictSupervisor && !filterSupervisor && (
-        <div
-          style={{
-            padding: "12px 24px",
-            backgroundColor: "#fff3cd",
-            color: "#856404",
-            borderBottom: "1px solid #ffeeba",
-          }}
-        >
+        <div className="alert-warning">
           <strong>Notice:</strong> Please select a <strong>SUPERVISOR</strong>{" "}
           from the top filters before filling out this registration form.
         </div>
       )}
 
-      <div
-        style={{
-          ...styles.cardBody,
-          opacity: !isFormEnabled ? 0.6 : 1,
-          pointerEvents: !isFormEnabled ? "none" : "auto",
-        }}
-      >
-        <div style={styles.profileSection}>
-          <img src={profileImage} alt="Profile Avatar" style={styles.avatar} />
+      <div className={`card-body ${!isFormEnabled ? "disabled-body" : ""}`}>
+        <div className="profile-section">
+          <img src={profileImage} alt="Profile Avatar" className="avatar" />
           <div>
-            <div style={styles.buttonGroup}>
+            <div className="button-group">
               <button
                 type="button"
-                style={styles.btnOutline}
+                className="btn-outline"
                 onClick={handleUploadClick}
               >
                 Upload new photo
               </button>
               <button
                 type="button"
-                style={styles.btnOutline}
+                className="btn-outline"
                 onClick={handleResetImage}
               >
                 Reset
@@ -498,7 +462,7 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
                 style={{ display: "none" }}
               />
             </div>
-            <p style={styles.hintText}>
+            <p className="hint-text">
               Allowed JPG, GIF or PNG. Max size of 800K
             </p>
           </div>
@@ -508,8 +472,8 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
           onSubmit={handleSubmit(onSubmitAsthaDidi, onErrorAsthaDidi)}
           autoComplete="off"
         >
-          <h6 style={styles.sectionHeader}>Astha Didi Information</h6>
-          <div style={styles.formGrid}>
+          <h6 className="section-header">Astha Didi Information</h6>
+          <div className="form-grid">
             <Controller
               name="joiningAmount"
               control={control}
@@ -517,7 +481,7 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Joining Amount <span style={{ color: "#ff3e1d" }}>*</span>
+                      Joining Amount <span className="required-asterisk">*</span>
                     </>
                   }
                   id="joiningAmount"
@@ -537,7 +501,7 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Wallet Balance <span style={{ color: "#ff3e1d" }}>*</span>
+                      Wallet Balance <span className="required-asterisk">*</span>
                     </>
                   }
                   id="walletBalance"
@@ -550,8 +514,9 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Personal Details</h6>
-          <div style={styles.formGrid}>
+          <h6 className="section-header">Personal Details</h6>
+
+          <div className="personal-details-grid">
             <Controller
               name="fullName"
               control={control}
@@ -559,7 +524,7 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Full Name <span style={{ color: "#ff3e1d" }}>*</span>
+                      Full Name <span className="required-asterisk">*</span>
                     </>
                   }
                   id="fullName"
@@ -593,7 +558,7 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Date of Birth <span style={{ color: "#ff3e1d" }}>*</span>
+                      Date of Birth <span className="required-asterisk">*</span>
                     </>
                   }
                   id="dob"
@@ -612,7 +577,7 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
                   label={
                     <>
                       Guardian Contact no{" "}
-                      <span style={{ color: "#ff3e1d" }}>*</span>
+                      <span className="required-asterisk">*</span>
                     </>
                   }
                   id="guardianContactNo"
@@ -626,10 +591,10 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Postal Address Information</h6>
-          <div style={styles.formGrid}>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Select State</label>
+          <h6 className="section-header">Postal Address Information</h6>
+          <div className="form-grid">
+            <div className="input-group">
+              <label className="label">Select State</label>
               <Controller
                 name="state"
                 control={control}
@@ -637,18 +602,19 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
                   <Select
                     {...field}
                     options={dbStates}
-                    styles={styles.selectStyles(!!errors.state)}
+                    styles={styles.selectStyles && styles.selectStyles(!!errors.state)}
                     placeholder="Select State"
                     isDisabled={!!filterState}
+                    classNamePrefix="custom-select"
                   />
                 )}
               />
               {errors.state && (
-                <p style={styles.errorText}>{errors.state.message}</p>
+                <p className="error-text">{errors.state.message}</p>
               )}
             </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>District</label>
+            <div className="input-group">
+              <label className="label">District</label>
               <Controller
                 name="district"
                 control={control}
@@ -656,14 +622,15 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
                   <Select
                     {...field}
                     options={dbDistricts}
-                    styles={styles.selectStyles(!!errors.district)}
+                    styles={styles.selectStyles && styles.selectStyles(!!errors.district)}
                     placeholder="Select District"
                     isDisabled={!!filterDistrict || !selectedState}
+                    classNamePrefix="custom-select"
                   />
                 )}
               />
               {errors.district && (
-                <p style={styles.errorText}>{errors.district.message}</p>
+                <p className="error-text">{errors.district.message}</p>
               )}
             </div>
             <Controller
@@ -688,7 +655,7 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Block <span style={{ color: "#ff3e1d" }}>*</span>
+                      Block <span className="required-asterisk">*</span>
                     </>
                   }
                   id="block"
@@ -737,7 +704,7 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Gram Panchayet <span style={{ color: "#ff3e1d" }}>*</span>
+                      Gram Panchayet <span className="required-asterisk">*</span>
                     </>
                   }
                   id="gramPanchayet"
@@ -756,7 +723,7 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Village <span style={{ color: "#ff3e1d" }}>*</span>
+                      Village <span className="required-asterisk">*</span>
                     </>
                   }
                   id="village"
@@ -775,7 +742,7 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Pin Code <span style={{ color: "#ff3e1d" }}>*</span>
+                      Pin Code <span className="required-asterisk">*</span>
                     </>
                   }
                   id="pinCode"
@@ -794,7 +761,7 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Contact Number <span style={{ color: "#ff3e1d" }}>*</span>
+                      Contact Number <span className="required-asterisk">*</span>
                     </>
                   }
                   id="mobileNo"
@@ -808,8 +775,8 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Login & Account Setup</h6>
-          <div style={styles.formGrid}>
+          <h6 className="section-header">Login & Account Setup</h6>
+          <div className="form-grid">
             <Controller
               name="userName"
               control={control}
@@ -817,7 +784,7 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      User Name <span style={{ color: "#ff3e1d" }}>*</span>
+                      User Name <span className="required-asterisk">*</span>
                     </>
                   }
                   id="userName"
@@ -837,7 +804,7 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
                   label={
                     <>
                       Email ID (For Login){" "}
-                      <span style={{ color: "#ff3e1d" }}>*</span>
+                      <span className="required-asterisk">*</span>
                     </>
                   }
                   id="email"
@@ -858,7 +825,7 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
                   label={
                     <>
                       Set New Password{" "}
-                      <span style={{ color: "#ff3e1d" }}>
+                      <span className="required-asterisk">
                         * (Don't forget it!)
                       </span>
                     </>
@@ -872,8 +839,8 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Banking & Payment Details</h6>
-          <div style={styles.formGrid}>
+          <h6 className="section-header">Banking & Payment Details</h6>
+          <div className="form-grid">
             <Controller
               name="bankName"
               control={control}
@@ -966,27 +933,17 @@ const AsthaDidiForm = ({ onSuccess, externalFilters }) => {
             />
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: "16px",
-              marginTop: "32px",
-            }}
-          >
+          <div className="form-actions">
             <button
               type="button"
-              style={styles.btnOutline}
+              className={`btn-primary ${!isFormEnabled ? "btn-disabled" : ""}`}
               onClick={handleCancelAsthaDidi}
             >
               Cancel
             </button>
             <button
               type="submit"
-              style={{
-                ...styles.btnPrimary,
-                opacity: !isFormEnabled ? 0.5 : 1,
-              }}
+              className={`btn-primary ${!isFormEnabled ? "btn-disabled" : ""}`}
               disabled={!isFormEnabled}
             >
               Submit

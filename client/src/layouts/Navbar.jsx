@@ -78,15 +78,22 @@ const Navbar = () => {
 
   // 4. Handle Logout functionality
   const handleLogout = () => {
-    localStorage.removeItem("loggedInUser"); // Clear session
-    window.location.href = "/login"; // Force a hard redirect to the login page
+    const confirmLogout = window.confirm(
+      "Are you sure you want to logout?"
+    );
+
+    if (confirmLogout) {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "/login";
+    }
   };
+
 
   const styles = {
     navbarContainer: {
       height: "64px",
       backgroundColor: "#ffffff",
-      margin: "16px 24px",
+      // margin: "16px 24px",
       borderRadius: "8px",
       display: "flex",
       alignItems: "center",

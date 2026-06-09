@@ -1,0 +1,340 @@
+/* =====================================================
+   ASTHA DIDI FORM - PROFESSIONAL CLEAN UI
+===================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+/* ===========================
+   GRID
+=========================== */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+/* ===========================
+   FIELD WRAPPER
+=========================== */
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #566a7f;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+
+/* ===========================
+   INPUTS
+=========================== */
+
+.input-group input,
+.input-group textarea,
+.password-input {
+  width: 100%;
+
+  height: 48px;
+  min-height: 48px;
+  max-height: 48px;
+
+  border: 1px solid #d9dee3;
+  border-radius: 6px;
+
+  background: #fff;
+  color: #566a7f;
+
+  font-size: 15px;
+  font-weight: 400;
+
+  padding: 0 14px;
+
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.input-group textarea {
+  min-height: 120px;
+  max-height: none;
+  padding: 12px 14px;
+}
+
+.input-group input:focus,
+.password-input:focus,
+.input-group textarea:focus {
+  border-color: #696cff;
+  box-shadow: 0 0 0 3px rgba(105, 108, 255, 0.12);
+}
+
+/* ===========================
+   DISABLED
+=========================== */
+
+.input-group input:disabled,
+.password-input:disabled {
+  background: #f5f5f9;
+  color: #8592a3;
+  cursor: not-allowed;
+}
+
+/* ===========================
+   ERROR
+=========================== */
+
+.error {
+  border-color: #ff3e1d !important;
+}
+
+.error-text {
+  color: #ff3e1d;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* ===========================
+   PASSWORD FIELD
+=========================== */
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-input {
+  padding-right: 50px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+
+  transform: translateY(-50%);
+
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+
+  font-size: 16px;
+  color: #697a8d;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===========================
+   DATE FIX
+=========================== */
+
+input[type="date"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="text"],
+input[type="password"] {
+  height: 48px;
+}
+
+/* ===========================
+   REACT SELECT
+=========================== */
+
+.custom-select__control {
+  width: 100% !important;
+
+  height: 48px !important;
+  min-height: 48px !important;
+
+  border: 1px solid #d9dee3 !important;
+  border-radius: 6px !important;
+
+  background: #fff !important;
+
+  box-shadow: none !important;
+
+  display: flex !important;
+  align-items: center !important;
+}
+
+.custom-select__control:hover {
+  border-color: #696cff !important;
+}
+
+.custom-select__value-container {
+  height: 46px !important;
+
+  padding: 0 14px !important;
+
+  display: flex !important;
+  align-items: center !important;
+}
+
+.custom-select__input-container {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.custom-select__single-value {
+  margin: 0 !important;
+  color: #566a7f !important;
+  font-size: 15px !important;
+}
+
+.custom-select__placeholder {
+  margin: 0 !important;
+  color: #8592a3 !important;
+  font-size: 15px !important;
+}
+
+.custom-select__indicators {
+  height: 46px !important;
+}
+
+.custom-select__indicator {
+  padding: 8px !important;
+}
+
+.custom-select__indicator-separator {
+  margin: 8px 0 !important;
+}
+
+.custom-select__menu {
+  z-index: 99999 !important;
+}
+
+.custom-select__menu-list {
+  padding: 0 !important;
+}
+
+.custom-select__option {
+  padding: 10px 14px !important;
+  font-size: 14px !important;
+}
+
+/* ===========================
+   BUTTONS
+=========================== */
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+
+  margin-top: 30px;
+}
+
+.btn-primary {
+  min-width: 140px;
+  height: 44px;
+
+  border: none;
+  border-radius: 6px;
+
+  background: #696cff;
+  color: white;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+}
+
+.btn-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===========================
+   SECTION TITLE
+=========================== */
+
+.section-header {
+  margin-top: 30px;
+  margin-bottom: 20px;
+
+  padding-bottom: 10px;
+
+  border-bottom: 1px solid #ebeef2;
+
+  color: #566a7f;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media (max-width: 1200px) {
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-primary {
+    width: 100%;
+  }
+}
+/* =====================================
+   PERSONAL DETAILS - 4 COLUMN LAYOUT
+===================================== */
+
+.personal-details-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.personal-details-grid .input-group {
+  width: 100%;
+  min-width: 0;
+}
+
+.personal-details-grid .input-group input,
+.personal-details-grid .password-input {
+  width: 100%;
+  height: 48px;
+}
+
+/* Large Laptop */
+@media (max-width: 1400px) {
+  .personal-details-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .personal-details-grid {
+    grid-template-columns: 1fr;
+  }
+}

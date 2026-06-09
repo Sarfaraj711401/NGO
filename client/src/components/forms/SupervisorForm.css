@@ -1,0 +1,247 @@
+/* =========================
+   GLOBAL RESET
+========================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* =========================
+   CARD
+========================= */
+.card {
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.card-header h5 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* =========================
+   BODY
+========================= */
+.card-body {
+  padding: 20px;
+}
+
+.disabled-body {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* =========================
+   GRID (CLEAN + ALIGN FIX)
+========================= */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================
+   INPUT GROUP FIX
+========================= */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* LABEL */
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+/* =========================
+   🔥 UNIFORM HEIGHT FIX (MAIN PART)
+========================= */
+.form-input,
+.input-group input,
+.input-group textarea,
+.password-input,
+.react-select__control {
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+
+  width: 100% !important;
+  border-radius: 8px !important;
+
+  border: 1px solid #d1d5db !important;
+  font-size: 13px !important;
+
+  padding: 0 10px !important;
+  display: flex;
+  align-items: center;
+}
+
+/* =========================
+   TEXTAREA (EXCEPTION HEIGHT)
+========================= */
+textarea {
+  height: 80px !important;
+  padding: 10px !important;
+  align-items: flex-start !important;
+}
+
+/* =========================
+   FOCUS
+========================= */
+input:focus,
+textarea:focus,
+.react-select__control--is-focused,
+.password-input:focus {
+  border-color: #4f46e5 !important;
+  box-shadow: 0 0 0 2px rgba(79,70,229,0.12) !important;
+  outline: none !important;
+}
+
+/* =========================
+   PASSWORD FIX (ALIGN PERFECT)
+========================= */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-input {
+  padding-right: 42px !important;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* =========================
+   REACT SELECT FIX
+========================= */
+.react-select__control {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.react-select__value-container {
+  height: 42px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 10px !important;
+}
+
+.react-select__indicators {
+  height: 42px !important;
+}
+
+/* =========================
+   ERROR
+========================= */
+.error-text {
+  font-size: 11px;
+  color: #dc2626;
+  margin-top: 3px;
+}
+
+/* =========================
+   BUTTON ALIGN FIX
+========================= */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-primary {
+  height: 42px;
+  min-width: 120px;
+  border-radius: 8px;
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary:hover {
+  background: #4338ca;
+}
+
+.btn-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* =========================
+   SECTION HEADER
+========================= */
+.section-header {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 20px 0 10px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 5px;
+}
+
+/* =====================================
+   PERSONAL DETAILS - 4 COLUMN LAYOUT
+===================================== */
+
+.personal-details-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.personal-details-grid .input-group {
+  width: 100%;
+  min-width: 0;
+}
+
+.personal-details-grid .input-group input,
+.personal-details-grid .password-input {
+  width: 100%;
+  height: 48px;
+}
+
+/* Large Laptop */
+@media (max-width: 1400px) {
+  .personal-details-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .personal-details-grid {
+    grid-template-columns: 1fr;
+  }
+}

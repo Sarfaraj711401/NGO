@@ -60,7 +60,7 @@ export const styles = {
     boxShadow: "0 2px 6px 0 rgba(67, 89, 113, 0.12)",
     fontFamily: '"Public Sans", sans-serif',
     overflow: "hidden",
-    marginBottom: "24px",
+    marginBottom: "0px",
     width: "100%",
     boxSizing: "border-box",
   },
@@ -203,21 +203,57 @@ export const styles = {
       ...base,
       borderColor: hasError ? "#ff3e1d" : "#d9dee3",
       minHeight: "42px",
-      borderRadius: "4px",
+      height: "42px",
+      borderRadius: "8px",
       boxShadow: "none",
-      "&:hover": { borderColor: "#2b84b8" },
+      display: "flex",
+      alignItems: "center",
+      width: "100%",
+      "&:hover": {
+        borderColor: "#4f46e5",
+      },
     }),
+
+    valueContainer: (base) => ({
+      ...base,
+      height: "42px",
+      padding: "0 10px",
+      display: "flex",
+      alignItems: "center",
+      flexWrap: "nowrap",
+      overflow: "hidden",
+    }),
+
+    indicatorsContainer: (base) => ({
+      ...base,
+      height: "42px",
+    }),
+
+    input: (base) => ({
+      ...base,
+      margin: 0,
+      padding: 0,
+    }),
+
     singleValue: (base) => ({
       ...base,
-      color: "#697a8d",
-      fontSize: "0.9375rem",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      maxWidth: "100%",
     }),
+
     placeholder: (base) => ({
       ...base,
-      color: "#b4bdc6",
-      fontSize: "0.9375rem",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
     }),
-    menu: (base) => ({ ...base, zIndex: 99999 }),
+
+    menu: (base) => ({
+      ...base,
+      zIndex: 99999,
+    }),
   }),
   sectionHeader: {
     fontSize: "1rem",
@@ -401,17 +437,23 @@ export const FormInput = ({
   disabled,
   ...props
 }) => (
-  <div style={styles.inputGroup}>
-    <label htmlFor={id} style={styles.label}>
+  <div className="input-group">
+    <label htmlFor={id} className="label">
       {label}
     </label>
+
     <input
       id={id}
-      style={disabled ? styles.inputDisabled : styles.input(!!error)}
+      className={error ? "form-input error" : "form-input"}
       placeholder={placeholder}
       disabled={disabled}
       {...props}
     />
-    {error && <p style={styles.errorText}>{error.message}</p>}
+
+    {error && (
+      <p className="error-text">
+        {error.message}
+      </p>
+    )}
   </div>
 );

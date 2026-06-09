@@ -4,12 +4,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Select from "react-select";
 import { toast } from "react-toastify";
+
+// Import your new CSS file
+import "./AsthaMaaForm.css";
+
 import {
   API_BASE_URL,
   DUMMY_AVATAR,
   indianZipRegex,
   indianPhoneRegex,
-  styles,
+  styles, // Keeping this ONLY if react-select uses styles.selectStyles internally
   FormInput,
 } from "../../config/constants";
 import {
@@ -20,42 +24,155 @@ import {
 
 export const asthaMaaSchema = z.object({
   joiningAmount: z.string().min(1, "Joining Amount is required"),
+
   walletBalance: z.string().optional(),
+
   fullName: z
     .string()
-    .min(2, "Min 2 characters")
-    .max(50, "Max 50 characters")
-    .regex(/^[a-zA-Z\s]+$/, "Letters only"),
-  sdwOf: z.string().optional(),
+    .min(2, "Minimum 2 characters required")
+    .max(50, "Maximum 50 characters allowed")
+    .regex(/^[A-Za-z\s]+$/, "Only letters are allowed"),
+
+  sdwOf: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || /^[A-Za-z\s]+$/.test(val),
+      "Only letters are allowed"
+    ),
+
   dob: z.string().min(1, "Date of Birth is required"),
-  guardianContactNo: z.string().min(1, "Guardian Contact no is required"),
-  state: z.object({ value: z.any(), label: z.string() }).nullable().optional(),
-  district: z
-    .object({ value: z.any(), label: z.string() })
+
+  guardianContactNo: z
+    .string()
+    .min(10, "Must be 10 digits")
+    .max(10, "Must be 10 digits")
+    .regex(/^[0-9]+$/, "Only digits allowed"),
+
+  state: z
+    .object({
+      value: z.any(),
+      label: z.string(),
+    })
     .nullable()
-    .optional(),
-  city: z.string().optional(),
-  block: z.string().min(1, "Block is required"),
-  postOffice: z.string().optional(),
-  policeStation: z.string().optional(),
-  gramPanchayet: z.string().min(1, "Gram Panchayet is required"),
-  village: z.string().min(1, "Village is required"),
+    .refine((val) => val !== null, {
+      message: "State is required",
+    }),
+
+  district: z
+    .object({
+      value: z.any(),
+      label: z.string(),
+    })
+    .nullable()
+    .refine((val) => val !== null, {
+      message: "District is required",
+    }),
+
+  city: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || /^[A-Za-z\s]+$/.test(val),
+      "Only letters are allowed"
+    ),
+
+  block: z
+    .string()
+    .min(1, "Block is required")
+    .regex(/^[A-Za-z\s]+$/, "Only letters are allowed"),
+
+  postOffice: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || /^[A-Za-z\s]+$/.test(val),
+      "Only letters are allowed"
+    ),
+
+  policeStation: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || /^[A-Za-z\s]+$/.test(val),
+      "Only letters are allowed"
+    ),
+
+  gramPanchayet: z
+    .string()
+    .min(1, "Gram Panchayet is required")
+    .regex(/^[A-Za-z\s]+$/, "Only letters are allowed"),
+
+  village: z
+    .string()
+    .min(1, "Village is required")
+    .regex(/^[A-Za-z\s]+$/, "Only letters are allowed"),
+
   pinCode: z
     .string()
-    .regex(indianZipRegex, "Valid 6-digit Pincode required")
-    .length(6, "Must be exactly 6 digits"),
-  mobileNo: z.string().regex(indianPhoneRegex, "Valid Indian phone required"),
+    .min(1, "Pin Code is required")
+    .regex(/^[0-9]{6}$/, "Pincode must be exactly 6 digits"),
+
+  mobileNo: z
+    .string()
+    .min(10, "Mobile number must be 10 digits")
+    .max(10, "Mobile number must be 10 digits")
+    .regex(/^[6-9][0-9]{9}$/, "Enter valid Indian mobile number"),
+
   email: z
     .string()
-    .email("Please enter a valid email address")
-    .max(100, "Max 100 characters"),
+    .min(1, "Email is required")
+    .email("Enter a valid email address")
+    .max(100, "Maximum 100 characters allowed"),
+
   userName: z.string().min(1, "Username is required"),
-  password: z.string().min(1, "Password is required"),
-  bankName: z.string().optional(),
-  branchName: z.string().optional(),
-  accountNo: z.string().optional(),
-  ifsCode: z.string().optional(),
-  panNo: z.string().optional(),
+
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters"),
+
+  bankName: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || /^[A-Za-z\s]+$/.test(val),
+      "Only letters are allowed"
+    ),
+
+  branchName: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || /^[A-Za-z\s]+$/.test(val),
+      "Only letters are allowed"
+    ),
+
+  accountNo: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || /^[0-9]+$/.test(val),
+      "Only digits allowed"
+    ),
+
+  ifsCode: z
+    .string()
+    .optional()
+    .refine(
+      (val) =>
+        !val || /^[A-Z]{4}0[A-Z0-9]{6}$/.test(val.toUpperCase()),
+      "Invalid IFSC code"
+    ),
+
+  panNo: z
+    .string()
+    .optional()
+    .refine(
+      (val) =>
+        !val || /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(val.toUpperCase()),
+      "Invalid PAN Number"
+    ),
+
   aadharNo: z
     .string()
     .optional()
@@ -64,8 +181,8 @@ export const asthaMaaSchema = z.object({
       (val) =>
         !val ||
         val.trim() === "" ||
-        (val.trim().length === 12 && /^\d+$/.test(val.trim())),
-      "Must be exactly 12 digits",
+        /^[0-9]{12}$/.test(val.trim()),
+      "Aadhaar must be exactly 12 digits"
     ),
 });
 
@@ -92,7 +209,7 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
     reset,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm({
     resolver: zodResolver(asthaMaaSchema),
     mode: "onChange",
@@ -142,10 +259,10 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
       // ✅ FIXED: Allow State Super Admin and all intermediate roles
       setIsFormAllowed(
         role === "astha didi" ||
-          role === "supervisor" ||
-          role === "district administrator" ||
-          role === "state super administrator" ||
-          role === "developer",
+        role === "supervisor" ||
+        role === "district administrator" ||
+        role === "state super administrator" ||
+        role === "developer",
       );
     }
   }, []);
@@ -215,29 +332,21 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
       return;
     }
 
+    // ✅ FIXED: Checks only Email ID and Contact Number for duplicates
     const checks = [
       {
         table: "asthama_reg",
         column: "AsthaMaMailId",
         value: data.email,
-        label: "Email",
+        label: "Email ID",
       },
       {
         table: "asthama_reg",
-        column: "AsthaMaSignupUserName",
-        value: data.userName,
-        label: "Username",
+        column: "AsthaMaContactNo",
+        value: data.mobileNo,
+        label: "Contact Number",
       },
     ];
-
-    if (data.aadharNo && data.aadharNo.trim() !== "") {
-      checks.push({
-        table: "asthama_reg",
-        column: "AsthaMaAadharNo",
-        value: data.aadharNo,
-        label: "Aadhar No",
-      });
-    }
 
     if (!(await validateUniqueFields(checks))) return;
 
@@ -317,25 +426,17 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
     toast.error("Error: Please check the required red fields.");
   };
 
-  // ✅ FIXED: Evaluates true for Super Admin as long as they pick an Astha Didi from the external filter
   const isFormEnabled =
     isFormAllowed && (isStrictAsthaDidi ? true : !!filterAsthaDidi);
 
   return (
-    <div style={styles.card}>
-      <div style={styles.cardHeader}>
+    <div className="card">
+      <div className="card-header">
         <h5>Astha Maa Registration</h5>
       </div>
 
       {!isFormAllowed && (
-        <div
-          style={{
-            padding: "12px 24px",
-            backgroundColor: "#f8d7da",
-            color: "#721c24",
-            borderBottom: "1px solid #f5c6cb",
-          }}
-        >
+        <div className="alert-danger">
           <strong>Access Denied:</strong> Only a user with the correct
           Administrative role can submit this form. Your current role does not
           permit this action.
@@ -343,40 +444,27 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
       )}
 
       {isFormAllowed && !isStrictAsthaDidi && !filterAsthaDidi && (
-        <div
-          style={{
-            padding: "12px 24px",
-            backgroundColor: "#fff3cd",
-            color: "#856404",
-            borderBottom: "1px solid #ffeeba",
-          }}
-        >
+        <div className="alert-warning">
           <strong>Notice:</strong> Please select an <strong>ASTHA DIDI</strong>{" "}
           from the top filters before filling out this registration form.
         </div>
       )}
 
-      <div
-        style={{
-          ...styles.cardBody,
-          opacity: !isFormEnabled ? 0.6 : 1,
-          pointerEvents: !isFormEnabled ? "none" : "auto",
-        }}
-      >
-        <div style={styles.profileSection}>
-          <img src={profileImage} alt="Profile Avatar" style={styles.avatar} />
+      <div className={`card-body ${!isFormEnabled ? "disabled-body" : ""}`}>
+        <div className="profile-section">
+          <img src={profileImage} alt="Profile Avatar" className="avatar" />
           <div>
-            <div style={styles.buttonGroup}>
+            <div className="button-group">
               <button
                 type="button"
-                style={styles.btnOutline}
+                className="btn-outline"
                 onClick={handleUploadClick}
               >
                 Upload new photo
               </button>
               <button
                 type="button"
-                style={styles.btnOutline}
+                className="btn-outline"
                 onClick={handleResetImage}
               >
                 Reset
@@ -389,7 +477,7 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                 style={{ display: "none" }}
               />
             </div>
-            <p style={styles.hintText}>
+            <p className="hint-text">
               Allowed JPG, GIF or PNG. Max size of 800K
             </p>
           </div>
@@ -399,8 +487,8 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
           onSubmit={handleSubmit(onSubmitAsthaMaa, onErrorAsthaMaa)}
           autoComplete="off"
         >
-          <h6 style={styles.sectionHeader}>Astha Maa Information</h6>
-          <div style={styles.formGrid}>
+          <h6 className="section-header">Astha Maa Information</h6>
+          <div className="form-grid">
             <Controller
               name="joiningAmount"
               control={control}
@@ -408,7 +496,7 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Joining Amount <span style={{ color: "#ff3e1d" }}>*</span>
+                      Joining Amount <span className="required-asterisk">*</span>
                     </>
                   }
                   id="joiningAmount"
@@ -428,7 +516,7 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Wallet Balance <span style={{ color: "#ff3e1d" }}>*</span>
+                      Wallet Balance <span className="required-asterisk">*</span>
                     </>
                   }
                   id="walletBalance"
@@ -443,8 +531,9 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Personal Details</h6>
-          <div style={styles.formGrid}>
+          <h6 className="section-header">Personal Details</h6>
+
+          <div className="personal-details-grid">
             <Controller
               name="fullName"
               control={control}
@@ -452,7 +541,7 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Full Name <span style={{ color: "#ff3e1d" }}>*</span>
+                      Full Name <span className="required-asterisk">*</span>
                     </>
                   }
                   id="fullName"
@@ -461,6 +550,11 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                   type="text"
                   maxLength={50}
                   {...field}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value.replace(/[^A-Za-z\s]/g, "")
+                    )
+                  }
                 />
               )}
             />
@@ -476,6 +570,11 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                   type="text"
                   maxLength={50}
                   {...field}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value.replace(/[^A-Za-z\s]/g, "")
+                    )
+                  }
                 />
               )}
             />
@@ -486,7 +585,7 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Date of Birth <span style={{ color: "#ff3e1d" }}>*</span>
+                      Date of Birth <span className="required-asterisk">*</span>
                     </>
                   }
                   id="dob"
@@ -505,7 +604,7 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                   label={
                     <>
                       Guardian Contact no{" "}
-                      <span style={{ color: "#ff3e1d" }}>*</span>
+                      <span className="required-asterisk">*</span>
                     </>
                   }
                   id="guardianContactNo"
@@ -514,15 +613,20 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                   type="text"
                   maxLength={50}
                   {...field}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value.replace(/\D/g, "").slice(0, 10)
+                    )
+                  }
                 />
               )}
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Postal Address Information</h6>
-          <div style={styles.formGrid}>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Select State</label>
+          <h6 className="section-header">Postal Address Information</h6>
+          <div className="form-grid">
+            <div className="input-group">
+              <label className="label">Select State</label>
               <Controller
                 name="state"
                 control={control}
@@ -530,18 +634,18 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                   <Select
                     {...field}
                     options={dbStates}
-                    styles={styles.selectStyles(!!errors.state)}
+                    styles={styles.selectStyles && styles.selectStyles(!!errors.state)}
                     placeholder="Select State"
                     isDisabled={!!filterState}
                   />
                 )}
               />
               {errors.state && (
-                <p style={styles.errorText}>{errors.state.message}</p>
+                <p className="error-text">{errors.state.message}</p>
               )}
             </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>District</label>
+            <div className="input-group">
+              <label className="label">District</label>
               <Controller
                 name="district"
                 control={control}
@@ -549,14 +653,14 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                   <Select
                     {...field}
                     options={dbDistricts}
-                    styles={styles.selectStyles(!!errors.district)}
+                    styles={styles.selectStyles && styles.selectStyles(!!errors.district)}
                     placeholder="Select District"
                     isDisabled={!!filterDistrict || !selectedState}
                   />
                 )}
               />
               {errors.district && (
-                <p style={styles.errorText}>{errors.district.message}</p>
+                <p className="error-text">{errors.district.message}</p>
               )}
             </div>
             <Controller
@@ -571,6 +675,11 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                   type="text"
                   maxLength={50}
                   {...field}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value.replace(/[^A-Za-z\s]/g, "")
+                    )
+                  }
                 />
               )}
             />
@@ -581,7 +690,7 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Block <span style={{ color: "#ff3e1d" }}>*</span>
+                      Block <span className="required-asterisk">*</span>
                     </>
                   }
                   id="block"
@@ -590,6 +699,11 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                   type="text"
                   maxLength={50}
                   {...field}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value.replace(/[^A-Za-z\s]/g, "")
+                    )
+                  }
                 />
               )}
             />
@@ -605,6 +719,11 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                   type="text"
                   maxLength={50}
                   {...field}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value.replace(/[^A-Za-z\s]/g, "")
+                    )
+                  }
                 />
               )}
             />
@@ -620,6 +739,11 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                   type="text"
                   maxLength={50}
                   {...field}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value.replace(/[^A-Za-z\s]/g, "")
+                    )
+                  }
                 />
               )}
             />
@@ -630,7 +754,7 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Gram Panchayet <span style={{ color: "#ff3e1d" }}>*</span>
+                      Gram Panchayet <span className="required-asterisk">*</span>
                     </>
                   }
                   id="gramPanchayet"
@@ -639,6 +763,11 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                   type="text"
                   maxLength={50}
                   {...field}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value.replace(/[^A-Za-z\s]/g, "")
+                    )
+                  }
                 />
               )}
             />
@@ -649,7 +778,7 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Village <span style={{ color: "#ff3e1d" }}>*</span>
+                      Village <span className="required-asterisk">*</span>
                     </>
                   }
                   id="village"
@@ -658,6 +787,11 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                   type="text"
                   maxLength={50}
                   {...field}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value.replace(/[^A-Za-z\s]/g, "")
+                    )
+                  }
                 />
               )}
             />
@@ -668,7 +802,7 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Pin Code <span style={{ color: "#ff3e1d" }}>*</span>
+                      Pin Code <span className="required-asterisk">*</span>
                     </>
                   }
                   id="pinCode"
@@ -677,6 +811,11 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                   type="text"
                   maxLength={6}
                   {...field}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value.replace(/\D/g, "").slice(0, 6)
+                    )
+                  }
                 />
               )}
             />
@@ -687,22 +826,27 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Contact Number <span style={{ color: "#ff3e1d" }}>*</span>
+                      Contact Number <span className="required-asterisk">*</span>
                     </>
                   }
                   id="mobileNo"
                   error={errors.mobileNo}
                   placeholder="Mobile No."
                   type="tel"
-                  maxLength={15}
+                  maxLength={10}
                   {...field}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value.replace(/\D/g, "").slice(0, 10)
+                    )
+                  }
                 />
               )}
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Login & Account Setup</h6>
-          <div style={styles.formGrid}>
+          <h6 className="section-header">Login & Account Setup</h6>
+          <div className="form-grid">
             <Controller
               name="userName"
               control={control}
@@ -710,7 +854,7 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      User Name <span style={{ color: "#ff3e1d" }}>*</span>
+                      User Name <span className="required-asterisk">*</span>
                     </>
                   }
                   id="userName"
@@ -730,7 +874,7 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                   label={
                     <>
                       Email ID (For Login){" "}
-                      <span style={{ color: "#ff3e1d" }}>*</span>
+                      <span className="required-asterisk">*</span>
                     </>
                   }
                   id="email"
@@ -740,6 +884,9 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                   maxLength={100}
                   autoComplete="off"
                   {...field}
+                  onChange={(e) =>
+                    field.onChange(e.target.value.trim())
+                  }
                 />
               )}
             />
@@ -751,7 +898,7 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                   label={
                     <>
                       Set New Password{" "}
-                      <span style={{ color: "#ff3e1d" }}>
+                      <span className="required-asterisk">
                         * (Don't forget it!)
                       </span>
                     </>
@@ -765,8 +912,9 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Banking & Payment Details</h6>
-          <div style={styles.formGrid}>
+          {/* ✅ SECURELY COMMENTED OUT: Banking & Payment Details Section */}
+          {/* <h6 className="section-header">Banking & Payment Details</h6>
+          <div className="form-grid">
             <Controller
               name="bankName"
               control={control}
@@ -857,30 +1005,20 @@ const AsthaMaaForm = ({ onSuccess, externalFilters }) => {
                 />
               )}
             />
-          </div>
+          </div> */}
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: "16px",
-              marginTop: "32px",
-            }}
-          >
+          <div className="form-actions">
             <button
               type="button"
-              style={styles.btnOutline}
+              className={`btn-primary ${!isFormEnabled ? "btn-disabled" : ""}`}
               onClick={handleCancelAsthaMaa}
             >
               Cancel
             </button>
             <button
               type="submit"
-              style={{
-                ...styles.btnPrimary,
-                opacity: !isFormEnabled ? 0.5 : 1,
-              }}
-              disabled={!isFormEnabled}
+              className={`btn-primary ${!isFormEnabled ? "btn-disabled" : ""}`}
+              disabled={!isFormEnabled || !isValid}
             >
               Submit
             </button>

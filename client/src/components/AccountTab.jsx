@@ -21,10 +21,12 @@ import MembersTable from "./AsthaDidiTable";
 
 const AccountTab = () => {
   const location = useLocation();
+
   const sidebarRole = useMemo(() => {
     const params = new URLSearchParams(location.search || "");
     return params.get("role");
   }, [location.search]);
+
   const isSidebarLocked = !!sidebarRole;
   const [appUserRole, setAppUserRole] = useState(null);
   const [loggedInProfileId, setLoggedInProfileId] = useState(null);
@@ -45,6 +47,21 @@ const AccountTab = () => {
 
   const isLockedRole =
     appUserRole === "District Administrator" || appUserRole === "Supervisor";
+  useEffect(() => {
+    if (sidebarRole) return;
+
+    if (appUserRole === "State Super Administrator") {
+      setAdminActiveView("District Administrator");
+    } else if (appUserRole === "Developer") {
+      setAdminActiveView("District Administrator");
+    } else if (appUserRole === "District Administrator") {
+      setAdminActiveView("Supervisor");
+    } else if (appUserRole === "Supervisor") {
+      setAdminActiveView("Astha Didi");
+    } else if (appUserRole === "Astha Didi") {
+      setAdminActiveView("Astha Maa");
+    }
+  }, [appUserRole, sidebarRole]);
 
   useEffect(() => {
     const user = getSafeUser();
@@ -348,24 +365,19 @@ const AccountTab = () => {
   };
 
   const handleFormSuccess = () => setRefreshTrigger((prev) => prev + 1);
-
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const role = params.get("role");
-
     if (
-      role &&
+      sidebarRole &&
       [
         "District Administrator",
         "Supervisor",
         "Astha Didi",
         "Astha Maa",
-      ].includes(role)
+      ].includes(sidebarRole)
     ) {
-      setAdminActiveView(role);
+      setAdminActiveView(sidebarRole);
     }
-  }, [location.search]);
-
+  }, [sidebarRole]);
   if (!location) return null;
   if (appUserRole === null)
     return <div style={{ padding: "24px" }}>Loading Interface...</div>;
@@ -395,6 +407,55 @@ const AccountTab = () => {
   );
   const isAsthaDidiVisible = ["Astha Maa"].includes(adminActiveView);
 
+  // ✅ FIXED: Advanced layout rules for seamless, unbroken text in react-select
+  const baseSelectStyles = styles.selectStyles(false);
+  const customSelectStyles = {
+    ...baseSelectStyles,
+    menuPortal: (base, props) => ({
+      ...(baseSelectStyles.menuPortal
+        ? baseSelectStyles.menuPortal(base, props)
+        : base),
+      zIndex: 99999,
+    }),
+    menu: (base, props) => ({
+      ...(baseSelectStyles.menu ? baseSelectStyles.menu(base, props) : base),
+      zIndex: 99999,
+      minWidth: "220px",
+    }),
+    control: (base, props) => ({
+      ...(baseSelectStyles.control
+        ? baseSelectStyles.control(base, props)
+        : base),
+      minHeight: "42px",
+      height: "42px",
+      width: "100%",
+    }),
+    option: (base, props) => ({
+      ...(baseSelectStyles.option
+        ? baseSelectStyles.option(base, props)
+        : base),
+      whiteSpace: "nowrap", // Strictly prevent text breaking across lines in the dropdown
+    }),
+    singleValue: (base, props) => ({
+      ...(baseSelectStyles.singleValue
+        ? baseSelectStyles.singleValue(base, props)
+        : base),
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      maxWidth: "100%",
+    }),
+    valueContainer: (base, props) => ({
+      ...(baseSelectStyles.valueContainer
+        ? baseSelectStyles.valueContainer(base, props)
+        : base),
+      height: "42px",
+      padding: "0 10px",
+      flexWrap: "nowrap",
+      whiteSpace: "nowrap",
+    }),
+  };
+
   return (
     <>
       <ToastContainer autoClose={3000} pauseOnHover={false} />
@@ -402,45 +463,29 @@ const AccountTab = () => {
         style={{
           ...styles.card,
           padding: "24px",
-          marginBottom: "24px",
+          marginTop: "0px",
+          marginBottom: "0px",
           overflow: "visible",
           display: "flex",
           gap: "16px",
           flexWrap: "wrap",
-          alignItems: "flex-end",
+          alignItems: "flex-start",
         }}
       >
-        {/* <div style={{ width: "100%", maxWidth: "250px" }}>
+
+        {/* ✅ FIXED: Removed maxWidth to let inputs naturally grow */}
+        <div
+          style={{
+            width: "250px",
+            minWidth: "250px",
+            maxWidth: "250px",
+          }}
+        >
           <label
             style={{ ...styles.label, marginBottom: "8px", display: "block" }}
           >
             Select Role Entry / View <span style={{ color: "#ff3e1d" }}>*</span>
           </label>
-          <Select
-            options={adminOptions}
-            value={adminOptions.find((o) => o.value === adminActiveView)}
-            onChange={(s) => {
-              setAdminActiveView(s.value);
-              handleReset(0);
-            }}
-            styles={{
-              ...styles.selectStyles(false),
-              menuPortal: (base) => ({ ...base, zIndex: 99999 }),
-            }}
-            menuPortalTarget={document.body}
-            menuPosition="fixed"
-            isSearchable={false}
-          />
-        </div> */}
-
-
-        <div style={{ width: "100%", maxWidth: "250px" }}>
-          <label
-            style={{ ...styles.label, marginBottom: "8px", display: "block" }}
-          >
-            Select Role Entry / View <span style={{ color: "#ff3e1d" }}>*</span>
-          </label>
-
           <Select
             options={adminOptions}
             value={adminOptions.find((o) => o.value === adminActiveView)}
@@ -459,9 +504,14 @@ const AccountTab = () => {
           />
         </div>
 
-
         {isMotherNgoVisible && (
-          <div style={{ width: "100%", maxWidth: "200px" }}>
+          <div
+            style={{
+              width: "630px",
+              minWidth: "630px",
+              maxWidth: "630px",
+            }}
+          >
             <label
               style={{ ...styles.label, marginBottom: "8px", display: "block" }}
             >
@@ -477,17 +527,20 @@ const AccountTab = () => {
               isDisabled={isLockedRole || appUserRole === "Astha Didi"}
               isClearable={!isLockedRole && appUserRole !== "Astha Didi"}
               placeholder="Select NGO"
-              styles={{
-                ...styles.selectStyles(false),
-                menuPortal: (base) => ({ ...base, zIndex: 99999 }),
-              }}
+              styles={customSelectStyles}
               menuPortalTarget={document.body}
               menuPosition="fixed"
             />
           </div>
         )}
 
-        <div style={{ width: "100%", maxWidth: "150px" }}>
+        <div
+          style={{
+            width: "250px",
+            minWidth: "250px",
+            maxWidth: "250px",
+          }}
+        >
           <label
             style={{ ...styles.label, marginBottom: "8px", display: "block" }}
           >
@@ -505,16 +558,19 @@ const AccountTab = () => {
             }
             isClearable={!isLockedRole && appUserRole !== "Astha Didi"}
             placeholder="State"
-            styles={{
-              ...styles.selectStyles(false),
-              menuPortal: (base) => ({ ...base, zIndex: 99999 }),
-            }}
+            styles={customSelectStyles}
             menuPortalTarget={document.body}
             menuPosition="fixed"
           />
         </div>
 
-        <div style={{ width: "100%", maxWidth: "150px" }}>
+        <div
+          style={{
+            width: "250px",
+            minWidth: "250px",
+            maxWidth: "250px",
+          }}
+        >
           <label
             style={{ ...styles.label, marginBottom: "8px", display: "block" }}
           >
@@ -532,17 +588,20 @@ const AccountTab = () => {
             }
             isClearable={!isLockedRole && appUserRole !== "Astha Didi"}
             placeholder="District"
-            styles={{
-              ...styles.selectStyles(false),
-              menuPortal: (base) => ({ ...base, zIndex: 99999 }),
-            }}
+            styles={customSelectStyles}
             menuPortalTarget={document.body}
             menuPosition="fixed"
           />
         </div>
 
         {isSupervisorVisible && (
-          <div style={{ width: "100%", maxWidth: "200px" }}>
+          <div
+            style={{
+              width: "250px",
+              minWidth: "250px",
+              maxWidth: "250px",
+            }}
+          >
             <label
               style={{ ...styles.label, marginBottom: "8px", display: "block" }}
             >
@@ -558,10 +617,7 @@ const AccountTab = () => {
               isDisabled={!filterDistrict || appUserRole === "Astha Didi"}
               isClearable={appUserRole !== "Astha Didi"}
               placeholder="Supervisor"
-              styles={{
-                ...styles.selectStyles(false),
-                menuPortal: (base) => ({ ...base, zIndex: 99999 }),
-              }}
+              styles={customSelectStyles}
               menuPortalTarget={document.body}
               menuPosition="fixed"
             />
@@ -569,7 +625,13 @@ const AccountTab = () => {
         )}
 
         {isAsthaDidiVisible && (
-          <div style={{ width: "100%", maxWidth: "200px" }}>
+          <div
+            style={{
+              width: "250px",
+              minWidth: "250px",
+              maxWidth: "250px",
+            }}
+          >
             <label
               style={{ ...styles.label, marginBottom: "8px", display: "block" }}
             >
@@ -588,10 +650,7 @@ const AccountTab = () => {
               }
               isClearable={appUserRole !== "Astha Didi"}
               placeholder="Astha Didi"
-              styles={{
-                ...styles.selectStyles(false),
-                menuPortal: (base) => ({ ...base, zIndex: 99999 }),
-              }}
+              styles={customSelectStyles}
               menuPortalTarget={document.body}
               menuPosition="fixed"
             />

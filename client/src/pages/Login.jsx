@@ -169,7 +169,20 @@ const LoginForm = ({ onLogin, onToggleView }) => {
         // Save user payload directly to local storage (including all DB columns)
         localStorage.setItem("loggedInUser", JSON.stringify(data.user));
         onLogin();
-        navigate("/");
+        const role =
+          data.user.role || data.user.UserSignUpRole || "";
+
+        if (role === "State Super Administrator") {
+          navigate("/account-settings/account?role=District Administrator");
+        } else if (role === "District Administrator") {
+          navigate("/account-settings/account?role=Supervisor");
+        } else if (role === "Supervisor") {
+          navigate("/account-settings/account?role=Astha Didi");
+        } else if (role === "Astha Didi") {
+          navigate("/account-settings/account?role=Astha Maa");
+        } else {
+          navigate("/");
+        }
       } else {
         console.error("Error: " + data.error);
       }
@@ -436,7 +449,7 @@ const SignupForm = ({ onToggleView }) => {
 // ==========================================
 const Login = ({ onLogin }) => {
   const [isLoginView, setIsLoginView] = useState(true);
-  const handleLogin = onLogin || (() => {});
+  const handleLogin = onLogin || (() => { });
 
   return (
     <div style={styles.container}>

@@ -4,17 +4,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Select from "react-select";
 import { toast } from "react-toastify";
+
+// Import your newly separated CSS file
+import "./SupervisorForm.css";
+
 import {
   API_BASE_URL,
   DUMMY_AVATAR,
   indianZipRegex,
   indianPhoneRegex,
-  styles,
+  styles, // Retained specifically for react-select dropdowns
   FormInput,
 } from "../../config/constants";
 import {
   getSafeUser,
-  PasswordInput,
+  PasswordInput, // Re-exporting from utils if needed, otherwise using the local one
   validateUniqueFields,
 } from "../AccountSharedUtils";
 
@@ -127,8 +131,8 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
       // ✅ FIXED: Allow State Super Admin and Developer to fill this form
       setIsFormAllowed(
         role === "district administrator" ||
-          role === "state super administrator" ||
-          role === "developer",
+        role === "state super administrator" ||
+        role === "developer",
       );
     }
   }, []);
@@ -299,60 +303,40 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
   const isFormEnabled = isFormAllowed && !!filterMotherNgo;
 
   return (
-    <div style={styles.card}>
-      <div style={styles.cardHeader}>
+    <div className="card">
+      <div className="card-header">
         <h5>Supervisor Registration:-</h5>
       </div>
 
       {!isFormAllowed && (
-        <div
-          style={{
-            padding: "12px 24px",
-            backgroundColor: "#f8d7da",
-            color: "#721c24",
-            borderBottom: "1px solid #f5c6cb",
-          }}
-        >
+        <div className="alert-danger">
           <strong>Access Denied:</strong> Only a user with the correct
           Administrative role can submit this form.
         </div>
       )}
 
       {isFormAllowed && !filterMotherNgo && (
-        <div
-          style={{
-            padding: "12px 24px",
-            backgroundColor: "#fff3cd",
-            color: "#856404",
-            borderBottom: "1px solid #ffeeba",
-          }}
-        >
+        <div className="alert-warning">
           <strong>Notice:</strong> Please select a <strong>DISTRICT NGO</strong>{" "}
           from the top filters before filling out this registration form.
         </div>
       )}
 
-      <div
-        style={{
-          ...styles.cardBody,
-          opacity: !isFormEnabled ? 0.6 : 1,
-          pointerEvents: !isFormEnabled ? "none" : "auto",
-        }}
-      >
-        <div style={styles.profileSection}>
-          <img src={profileImage} alt="Profile Avatar" style={styles.avatar} />
+      <div className={`card-body ${!isFormEnabled ? "disabled-body" : ""}`}>
+        <div className="profile-section">
+          <img src={profileImage} alt="Profile Avatar" className="avatar" />
           <div>
-            <div style={styles.buttonGroup}>
+            <div className="button-group">
               <button
                 type="button"
-                style={styles.btnOutline}
+                className="btn-outline"
                 onClick={handleUploadClick}
               >
                 Upload new photo
               </button>
               <button
                 type="button"
-                style={styles.btnOutline}
+                className="btn-outline"
                 onClick={handleResetImage}
               >
                 Reset
@@ -365,7 +349,7 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
                 style={{ display: "none" }}
               />
             </div>
-            <p style={styles.hintText}>
+            <p className="hint-text">
               Allowed JPG, GIF or PNG. Max size of 800K
             </p>
           </div>
@@ -375,8 +359,8 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
           onSubmit={handleSubmit(onSubmitSupervisor, onErrorForm)}
           autoComplete="off"
         >
-          <h6 style={styles.sectionHeader}>Supervisor Information</h6>
-          <div style={styles.formGrid}>
+          <h6 className="section-header">Supervisor Information</h6>
+          <div className="form-grid">
             <Controller
               name="joiningAmount"
               control={control}
@@ -384,7 +368,7 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Joining Amount <span style={{ color: "#ff3e1d" }}>*</span>
+                      Joining Amount <span className="required-asterisk">*</span>
                     </>
                   }
                   id="joiningAmount"
@@ -399,8 +383,9 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Personal Details</h6>
-          <div style={styles.formGrid}>
+          <h6 className="section-header">Personal Details</h6>
+
+          <div className="personal-details-grid">
             <Controller
               name="fullName"
               control={control}
@@ -408,7 +393,7 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Full Name <span style={{ color: "#ff3e1d" }}>*</span>
+                      Full Name <span className="required-asterisk">*</span>
                     </>
                   }
                   id="fullName"
@@ -442,7 +427,7 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Date of Birth <span style={{ color: "#ff3e1d" }}>*</span>
+                      Date of Birth <span className="required-asterisk">*</span>
                     </>
                   }
                   id="dob"
@@ -470,10 +455,10 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Postal Address Information</h6>
-          <div style={styles.formGrid}>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Select State</label>
+          <h6 className="section-header">Postal Address Information</h6>
+          <div className="form-grid">
+            <div className="input-group">
+              <label className="label">Select State</label>
               <Controller
                 name="state"
                 control={control}
@@ -481,18 +466,18 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
                   <Select
                     {...field}
                     options={dbStates}
-                    styles={styles.selectStyles(!!errors.state)}
+                    styles={styles.selectStyles && styles.selectStyles(!!errors.state)}
                     placeholder="Select State"
                     isDisabled={!!filterState}
                   />
                 )}
               />
               {errors.state && (
-                <p style={styles.errorText}>{errors.state.message}</p>
+                <p className="error-text">{errors.state.message}</p>
               )}
             </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>District</label>
+            <div className="input-group">
+              <label className="label">District</label>
               <Controller
                 name="district"
                 control={control}
@@ -500,14 +485,14 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
                   <Select
                     {...field}
                     options={dbDistricts}
-                    styles={styles.selectStyles(!!errors.district)}
+                    styles={styles.selectStyles && styles.selectStyles(!!errors.district)}
                     placeholder="Select District"
                     isDisabled={!!filterDistrict || !selectedState}
                   />
                 )}
               />
               {errors.district && (
-                <p style={styles.errorText}>{errors.district.message}</p>
+                <p className="error-text">{errors.district.message}</p>
               )}
             </div>
             <Controller
@@ -607,7 +592,7 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Pin Code <span style={{ color: "#ff3e1d" }}>*</span>
+                      Pin Code <span className="required-asterisk">*</span>
                     </>
                   }
                   id="pinCode"
@@ -626,7 +611,7 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Contact Number <span style={{ color: "#ff3e1d" }}>*</span>
+                      Contact Number <span className="required-asterisk">*</span>
                     </>
                   }
                   id="mobileNo"
@@ -640,8 +625,8 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Login & Account Setup</h6>
-          <div style={styles.formGrid}>
+          <h6 className="section-header">Login & Account Setup</h6>
+          <div className="form-grid">
             <Controller
               name="userName"
               control={control}
@@ -649,7 +634,7 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      User Name <span style={{ color: "#ff3e1d" }}>*</span>
+                      User Name <span className="required-asterisk">*</span>
                     </>
                   }
                   id="userName"
@@ -669,7 +654,7 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
                   label={
                     <>
                       Email ID (For Login){" "}
-                      <span style={{ color: "#ff3e1d" }}>*</span>
+                      <span className="required-asterisk">*</span>
                     </>
                   }
                   id="email"
@@ -686,10 +671,10 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
               name="password"
               control={control}
               render={({ field }) => (
-                <PasswordInput
+                <PasswordInput // Assuming you have imported this from AccountSharedUtils
                   label={
                     <>
-                      Set Password <span style={{ color: "#ff3e1d" }}>*</span>
+                      Set Password <span className="required-asterisk">*</span>
                     </>
                   }
                   id="password"
@@ -701,8 +686,8 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
             />
           </div>
 
-          <h6 style={styles.sectionHeader}>Banking & Payment Details</h6>
-          <div style={styles.formGrid}>
+          <h6 className="section-header">Banking & Payment Details</h6>
+          <div className="form-grid">
             <Controller
               name="bankName"
               control={control}
@@ -785,7 +770,7 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
                 <FormInput
                   label={
                     <>
-                      Aadhar No. <span style={{ color: "#ff3e1d" }}>*</span>
+                      Aadhar No. <span className="required-asterisk">*</span>
                     </>
                   }
                   id="aadharNo"
@@ -799,27 +784,17 @@ const SupervisorForm = ({ onSuccess, externalFilters }) => {
             />
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: "16px",
-              marginTop: "32px",
-            }}
-          >
+          <div className="form-actions">
             <button
               type="button"
-              style={styles.btnOutline}
+              className={`btn-primary ${!isFormEnabled ? "btn-disabled" : ""}`}
               onClick={handleCancelForm}
             >
               Cancel
             </button>
             <button
               type="submit"
-              style={{
-                ...styles.btnPrimary,
-                opacity: !isFormEnabled ? 0.5 : 1,
-              }}
+              className={`btn-primary ${!isFormEnabled ? "btn-disabled" : ""}`}
               disabled={!isFormEnabled}
             >
               Submit

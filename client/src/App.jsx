@@ -10,6 +10,7 @@ import RoleManagement from "./pages/RoleManagement";
 import AccessControl from "./pages/AccessControl";
 // ✅ ADDED THIS IMPORT TO FIX THE ERROR
 import ProductDistribution from "./pages/ProductDistribution";
+import StateNGOForm from "./components/forms/StateNGOForm";
 
 const App = () => {
   // FIX: Initialize state by checking localStorage directly.
@@ -33,13 +34,19 @@ const App = () => {
       flexDirection: "column",
       height: "100vh",
       minWidth: 0,
+      gap: "0px",
     },
     contentArea: {
-      padding: "0 24px 24px 24px",
+      padding: "0px",
+      paddingTop: "0px",
       overflowY: "auto",
       overflowX: "hidden",
       flex: 1,
       minWidth: 0,
+
+      display: "flex",
+      flexDirection: "column",
+      gap: "0px",
     },
   };
 
@@ -93,6 +100,10 @@ const App = () => {
                       <Route
                         path="*"
                         element={<Maintenance pageName="404 Not Found" />}
+                      />
+                      <Route
+                        path="/state-ngo-registration"
+                        element={<StateNGOForm />}
                       />
                     </Routes>
                   </div>

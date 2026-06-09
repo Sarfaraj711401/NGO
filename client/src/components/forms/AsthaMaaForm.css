@@ -1,0 +1,246 @@
+/* ================================
+   ASTHA MAA FORM - PROFESSIONAL UI
+   ================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+/* Card */
+.card {
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  background-color: #fff;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+/* Header */
+.card-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid #eaecef;
+  background: #f9fafc;
+}
+
+.card-header h5 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Body */
+.card-body {
+  padding: 26px;
+  transition: opacity 0.3s ease;
+}
+
+.disabled-body {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* Alerts */
+.alert-danger,
+.alert-warning {
+  padding: 12px 18px;
+  border-radius: 6px;
+  margin: 0 24px 16px 24px;
+  font-size: 14px;
+}
+
+.alert-danger {
+  background: #ffe6e9;
+  color: #b00020;
+  border-left: 4px solid #ff3b30;
+}
+
+.alert-warning {
+  background: #fff6db;
+  color: #7a5b00;
+  border-left: 4px solid #ffcc00;
+}
+
+/* Profile Section */
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #dfe6ee;
+}
+
+/* Buttons */
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-outline {
+  padding: 8px 14px;
+  border: 1px solid #667085;
+  background: transparent;
+  color: #344054;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.btn-outline:hover {
+  background: #f2f4f7;
+}
+
+/* ===== IMPORTANT BUTTON FIX ===== */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 30px;
+  align-items: center;
+}
+
+.btn-primary {
+  min-width: 140px;
+  height: 42px;              /* 🔥 FIXED HEIGHT */
+  border-radius: 8px;
+  border: none;
+  background: #4f46e5;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary:hover {
+  background: #4338ca;
+}
+
+.btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Section Header */
+.section-header {
+  font-size: 15px;
+  font-weight: 600;
+  color: #475467;
+  margin: 28px 0 14px;
+  border-bottom: 1px solid #eef2f6;
+  padding-bottom: 6px;
+}
+
+/* ===== GRID FIX (IMPORTANT) ===== */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 🔥 uniform columns */
+  gap: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Input group */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Labels */
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #344054;
+}
+
+/* Required */
+.required-asterisk {
+  color: #ff3b30;
+}
+
+/* Error text */
+.error-text {
+  font-size: 12px;
+  color: #ff3b30;
+  margin: 0;
+}
+
+/* ===== IMPORTANT FIX: INPUT UNIFORM SIZE ===== */
+
+/* This ensures ALL inputs (FormInput + react-select) match */
+input,
+select,
+textarea {
+  height: 42px;
+  border-radius: 6px;
+  border: 1px solid #d0d5dd;
+  padding: 0 12px;
+  font-size: 14px;
+  width: 100%;
+}
+
+/* React Select Fix */
+.css-13cymwt-control,
+.css-t3ipsp-control {
+  min-height: 42px !important;
+  height: 42px !important;
+  border-radius: 6px !important;
+}
+
+/* Hint text */
+.hint-text {
+  font-size: 12px;
+  color: #98a2b3;
+  margin-top: 6px;
+}
+/* =====================================
+   PERSONAL DETAILS - 4 COLUMN LAYOUT
+===================================== */
+
+.personal-details-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.personal-details-grid .input-group {
+  width: 100%;
+  min-width: 0;
+}
+
+.personal-details-grid .input-group input,
+.personal-details-grid .password-input {
+  width: 100%;
+  height: 48px;
+}
+
+/* Large Laptop */
+@media (max-width: 1400px) {
+  .personal-details-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .personal-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
