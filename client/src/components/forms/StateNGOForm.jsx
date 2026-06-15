@@ -244,6 +244,10 @@ const StateNGOForm = ({ onSuccess }) => {
     ===================================================== */
 
     const onSubmitStateNgo = async (data) => {
+
+        console.log("SUBMIT CLICKED");
+        console.log(data);
+
         if (!regCertPdf || !panPdf) {
             toast.error(
                 "Registration Certificate PDF and PAN PDF are mandatory."
@@ -326,6 +330,10 @@ const StateNGOForm = ({ onSuccess }) => {
                 }
             );
 
+            const result = await response.json();
+
+            console.log("API RESPONSE =", result);
+
             toast.dismiss("stateNgoSaving");
 
             if (response.ok) {
@@ -346,7 +354,9 @@ const StateNGOForm = ({ onSuccess }) => {
         }
     };
 
-    const onError = () => {
+    const onError = (errors) => {
+        console.log("FORM ERRORS =", errors);
+
         toast.error(
             "Please fill all required fields properly."
         );

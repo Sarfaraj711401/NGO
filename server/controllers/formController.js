@@ -177,7 +177,7 @@ exports.createAsthaDidi = (req, res) => {
         db.query(
           "UPDATE `asthadidi_reg` SET AsthaDidiProfileImage=? WHERE AsthaDidiRegId=?",
           [fileName, newId],
-          () => {},
+          () => { },
         );
 
         if (
@@ -196,7 +196,7 @@ exports.createAsthaDidi = (req, res) => {
               data.AsthaDidiCreatedByAuthRegId || null,
               newId,
             ],
-            () => {},
+            () => { },
           );
         }
         res.json({ message: "Astha Didi added successfully", id: newId });
@@ -265,7 +265,7 @@ exports.updateAsthaDidi = (req, res) => {
       db.query(
         `UPDATE userssignup SET UserSignUpPassword=? WHERE UserSignUpEmail=? AND UserSignUpRole='Astha Didi'`,
         [data.AsthaDidiSignupPassword, data.AsthaDidiSignupEmail],
-        () => {},
+        () => { },
       );
     }
     res.json({ message: "Record updated successfully" });
@@ -355,7 +355,7 @@ exports.createAsthaMaa = (req, res) => {
     db.query(
       "UPDATE asthama_reg SET AsthaMaProfileImage=? WHERE AsthaMaRegId=?",
       [fileName, newId],
-      () => {},
+      () => { },
     );
     if (data.AsthaMaSignupUserName) {
       db.query(
@@ -368,7 +368,7 @@ exports.createAsthaMaa = (req, res) => {
           data.AsthaMaCreatedByAuthRegId || null,
           newId,
         ],
-        () => {},
+        () => { },
       );
     }
     res.json({ message: "Astha Maa added successfully", id: newId });
@@ -521,7 +521,7 @@ exports.createDistrictAdmin = (req, res) => {
     db.query(
       "UPDATE dist_ngo_reg SET DistNGORecCertificate=?, DistNGOPanPic=?, DistNGODarpanPic=? WHERE DistNGORegId=?",
       [regCert, panPic, darpanPic, newId],
-      () => {},
+      () => { },
     );
 
     if (data.DistNGOSignupUserName) {
@@ -535,7 +535,7 @@ exports.createDistrictAdmin = (req, res) => {
           data.DistNGOCreatedByAuthRegId || null,
           newId,
         ],
-        () => {},
+        () => { },
       );
     }
     res.json({ message: "District Admin added successfully", id: newId });
@@ -683,7 +683,7 @@ exports.createSupervisor = (req, res) => {
     db.query(
       "UPDATE suvervisor_reg SET SupProfileImage=? WHERE SupRegId=?",
       [fileName, newId],
-      () => {},
+      () => { },
     );
     if (data.SupSignupUserName) {
       db.query(
@@ -696,7 +696,7 @@ exports.createSupervisor = (req, res) => {
           data.SupCreatedByAuthRegId || null,
           newId,
         ],
-        () => {},
+        () => { },
       );
     }
     res.json({ message: "Supervisor added successfully", id: newId });
@@ -1020,4 +1020,273 @@ exports.getDistributionHistory = (req, res) => {
       res.json(results);
     },
   );
+};
+
+exports.createStateNGO = (req, res) => {
+  console.log("REQ BODY =", req.body);
+  const {
+    AcctName,
+    RegDate,
+    RegNo,
+
+    MailId,
+    ContactNo,
+
+    StateName,
+
+    ConPer,
+    ConPerMailId,
+    ConPerContactNo,
+
+    PanNo,
+    DarpanId,
+
+    RegAddress,
+    WorkingAddress,
+
+    RecCertificate,
+    PanPic,
+    DarpanPic,
+
+    BankName,
+    BankAcctNo,
+    IFSCode,
+    BrName,
+    AcctHolderName,
+
+    SignupEmail,
+    SignupPassword,
+
+    IsActive
+  } = req.body;
+
+  console.log("REQ BODY =", req.body);
+
+  const sql = `
+INSERT INTO state_ngo_reg
+(
+  StateNGOName,
+  StateNGORegNo,
+  StateNGORegDate,
+
+  StateNGOStateName,
+
+  StateNGOPanNo,
+  StateNGODarpanId,
+
+  StateNGOMailId,
+  StateNGOPhoneNo,
+
+  StateNGORegAddress,
+  StateNGOWorkingAddress,
+
+  StateNGOConPer,
+  StateNGOConPerMailId,
+  StateNGOConPerContactNo,
+
+  StateNGORecCertificate,
+  StateNGOPanPic,
+  StateNGODarpanPic,
+
+  StateNGOBankName,
+  StateNGOAcctNo,
+  StateNGOIFSCode,
+  StateNGOBankAdd,
+  StateNGOAcctHoldeName,
+
+  StateNGOSignupUserName,
+  StateNGOSignupEmail,
+  StateNGOSignupPassword,
+  StateNGOIsActive
+)
+VALUES
+(
+ ?,?,?,?,
+ ?,?,
+ ?,?,
+ ?,?,
+ ?,?,?,
+ ?,?,?,
+ ?,?,?,?,?,
+ ?,?,?,?
+)
+`;
+
+  db.query(
+    sql,
+    [
+      AcctName,
+      RegNo,
+      RegDate,
+
+      StateName,
+
+      PanNo,
+      DarpanId,
+
+      MailId,
+      ContactNo,
+
+      RegAddress,
+      WorkingAddress,
+
+      ConPer,
+      ConPerMailId,
+      ConPerContactNo,
+
+      null,
+      null,
+      null,
+
+      BankName,
+      BankAcctNo,
+      IFSCode,
+      BrName,
+      AcctHolderName,
+
+      AcctName,
+      SignupEmail,
+      SignupPassword,
+
+      IsActive || 1
+    ],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({
+          error: err.message,
+        });
+      }
+
+      const stateNgoId = result.insertId;
+
+      const regCertificateFile = RecCertificate
+        ? saveBase64File(
+          RecCertificate,
+          "StateNGO",
+          stateNgoId,
+          "RegCertificate"
+        )
+        : null;
+
+      const panFile = PanPic
+        ? saveBase64File(
+          PanPic,
+          "StateNGO",
+          stateNgoId,
+          "PAN"
+        )
+        : null;
+
+      const darpanFile = DarpanPic
+        ? saveBase64File(
+          DarpanPic,
+          "StateNGO",
+          stateNgoId,
+          "Darpan"
+        )
+        : null;
+
+      db.query(
+        `
+      UPDATE state_ngo_reg
+      SET
+        StateNGORecCertificate = ?,
+        StateNGOPanPic = ?,
+        StateNGODarpanPic = ?
+      WHERE StateNGORegId = ?
+    `,
+        [
+          regCertificateFile,
+          panFile,
+          darpanFile,
+          stateNgoId
+        ],
+        (updateErr) => {
+
+          if (updateErr) {
+            console.error(updateErr);
+            return res.status(500).json({
+              error: updateErr.message,
+            });
+          }
+
+          db.query(
+            `
+        INSERT INTO userssignup
+        (
+          UserSignUpRole,
+          SignupUserName,
+          UserSignUpEmail,
+          UserSignUpPassword,
+          UserSignIsActive
+        )
+        VALUES (?, ?, ?, ?, ?)
+        `,
+            [
+              "STATE NGO",
+              AcctName,
+              SignupEmail,
+              SignupPassword,
+              1
+            ],
+            (err2) => {
+
+              if (err2) {
+                console.error(err2);
+                return res.status(500).json({
+                  error: err2.message,
+                });
+              }
+
+              res.json({
+                success: true,
+                message: "State NGO saved successfully"
+              });
+
+            }
+          );
+
+        }
+      );
+    }
+  );
+};
+exports.getStateNGO = (req, res) => {
+  const sql = `
+SELECT
+  StateNGORegId,
+  StateNGOName,
+  StateNGORegNo,
+
+  StateNGOPanNo,
+
+  StateNGOMailId,
+  StateNGOPhoneNo,
+
+  StateNGOStateName AS StateName,
+
+  StateNGOSDPName AS StateNGOConPer,
+  StateNGOConPerContactNo,
+
+  StateNGOSignupEmail,
+
+  StateNGORecCertificate,
+  StateNGOPanPic,
+  StateNGODarpanPic
+
+FROM state_ngo_reg
+ORDER BY StateNGORegId DESC
+`;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({
+        error: err.message,
+      });
+    }
+
+    res.json(results);
+  });
 };

@@ -55,4 +55,10 @@ router.get("/supervisors-by-dist/:distId", formController.getSupervisorsByDist);
 router.get("/distribution-history", formController.getDistributionHistory);
 router.post("/distribute", formController.distributeProduct);
 
+router.get("/statengo", formController.getStateNGO);
+router.post("/statengo", formController.createStateNGO);
+// router.put("/statengo/:id", formController.updateStateNGO);
+// router.delete("/statengo/:id", formController.deleteStateNGO);
+
+
 module.exports = router;

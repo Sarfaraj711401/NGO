@@ -1,5 +1,3 @@
-// src/components/tables/StateNGOTable.jsx
-
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -11,25 +9,21 @@ const StateNGOTable = ({ refreshTrigger }) => {
   const [stateNgoData, setStateNgoData] = useState([]);
   const [globalSearch, setGlobalSearch] = useState("");
 
-  // Pagination
+  // pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const loadData = async () => {
     try {
       setLoading(true);
+      const res = await fetch(`${API_BASE_URL}/statengo`);
+      if (!res.ok) throw new Error("Failed to fetch");
+      const data = await res.json();
 
-      const response = await fetch(`${API_BASE_URL}/statengo`);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch");
-      }
-
-      const data = await response.json();
+      console.log("STATE NGO DATA =", data);
 
       setStateNgoData(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
       toast.error("Failed to load State NGO data");
     } finally {
       setLoading(false);
@@ -40,42 +34,37 @@ const StateNGOTable = ({ refreshTrigger }) => {
     loadData();
   }, [refreshTrigger]);
 
+  // search filter
   const filteredData = useMemo(() => {
     if (!globalSearch) return stateNgoData;
 
-    const searchText = globalSearch.toLowerCase();
+    const search = globalSearch.toLowerCase();
 
     return stateNgoData.filter((row) =>
       Object.values(row).some(
-        (value) =>
-          value &&
-          String(value).toLowerCase().includes(searchText)
+        (val) =>
+          val && String(val).toLowerCase().includes(search)
       )
     );
   }, [stateNgoData, globalSearch]);
 
+  // pagination logic
   const totalPages = Math.max(
     1,
     Math.ceil(filteredData.length / rowsPerPage)
   );
 
   useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(1);
-    }
+    if (currentPage > totalPages) setCurrentPage(1);
   }, [currentPage, totalPages]);
 
-  const indexOfLastItem = currentPage * rowsPerPage;
-  const indexOfFirstItem = indexOfLastItem - rowsPerPage;
-
-  const currentTableData = filteredData.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
+  const indexOfLast = currentPage * rowsPerPage;
+  const indexOfFirst = indexOfLast - rowsPerPage;
+  const currentData = filteredData.slice(indexOfFirst, indexOfLast);
 
   return (
     <div style={{ ...styles.card, overflow: "hidden" }}>
-      {/* Header */}
+      {/* HEADER */}
       <div
         style={{
           display: "flex",
@@ -86,16 +75,21 @@ const StateNGOTable = ({ refreshTrigger }) => {
       >
         <h5 style={styles.cardHeader}>State NGO List</h5>
 
-        <button
-          onClick={loadData}
-          style={styles.btnOutline}
-        >
+        <button onClick={loadData} style={styles.btnOutline}>
           Refresh Data
         </button>
       </div>
 
-      <div style={styles.cardBody}>
-        {/* Search */}
+      <div
+        style={{
+          ...styles.cardBody,
+          display: "flex",
+          flexDirection: "column",
+          maxHeight: "80vh",
+          overflow: "hidden",
+        }}
+      >
+        {/* SEARCH */}
         <div
           style={{
             marginBottom: "20px",
@@ -119,11 +113,20 @@ const StateNGOTable = ({ refreshTrigger }) => {
           />
         </div>
 
-        {/* Table */}
+        {/* TABLE */}
         {loading ? (
           <p>Loading...</p>
         ) : (
-          <div style={styles.tableContainer}>
+          <div
+            style={{
+              ...styles.tableContainer,
+              maxHeight: "55vh",
+              overflowY: "auto",
+              overflowX: "auto",
+              border: "1px solid #eee",
+              borderRadius: "6px",
+            }}
+          >
             <table style={styles.table}>
               <thead>
                 <tr>
@@ -144,98 +147,70 @@ const StateNGOTable = ({ refreshTrigger }) => {
               </thead>
 
               <tbody>
-                {currentTableData.length > 0 ? (
-                  currentTableData.map((row, index) => (
-                    <tr key={row.StateNGORegId || index}>
+                {currentData.length > 0 ? (
+                  currentData.map((row, index) => (
+                    <tr key={row.StateNGORegId}>
+                      <td style={styles.td}>{indexOfFirst + index + 1}</td>
+
+                      <td style={styles.td}>{row.StateNGOName}</td>
+
+                      <td style={styles.td}>{row.StateNGORegNo}</td>
+
+                      <td style={styles.td}>{row.StateNGOPanNo}</td>
+
+                      <td style={styles.td}>{row.StateNGOMailId}</td>
+
+                      <td style={styles.td}>{row.StateNGOPhoneNo}</td>
+
+                      <td style={styles.td}>{row.StateName}</td>
+
+                      <td style={styles.td}>{row.StateNGOConPer}</td>
+
                       <td style={styles.td}>
-                        {indexOfFirstItem + index + 1}
+                        {row.StateNGOConPerContactNo}
                       </td>
 
                       <td style={styles.td}>
-                        {row.AcctName}
+                        {row.StateNGOSignupEmail}
                       </td>
 
                       <td style={styles.td}>
-                        {row.RegNo}
-                      </td>
-
-                      <td style={styles.td}>
-                        {row.PanNo}
-                      </td>
-
-                      <td style={styles.td}>
-                        {row.MailId}
-                      </td>
-
-                      <td style={styles.td}>
-                        {row.ContactNo}
-                      </td>
-
-                      <td style={styles.td}>
-                        {row.StateName}
-                      </td>
-
-                      <td style={styles.td}>
-                        {row.ConPer}
-                      </td>
-
-                      <td style={styles.td}>
-                        {row.ConPerContactNo}
-                      </td>
-
-                      <td style={styles.td}>
-                        {row.SignupEmail}
-                      </td>
-
-                      <td style={styles.td}>
-                        {row.RecCertificate ? (
+                        {row.StateNGORecCertificate ? (
                           <button
                             style={styles.btnOutline}
                             onClick={() =>
-                              handleViewPdf(
-                                row.RecCertificate
-                              )
+                              handleViewPdf(row.StateNGORecCertificate)
                             }
                           >
                             View
                           </button>
-                        ) : (
-                          "-"
-                        )}
+                        ) : "-"}
                       </td>
 
                       <td style={styles.td}>
-                        {row.PanPic ? (
+                        {row.StateNGOPanPic ? (
                           <button
                             style={styles.btnOutline}
                             onClick={() =>
-                              handleViewPdf(
-                                row.PanPic
-                              )
+                              handleViewPdf(row.StateNGOPanPic)
                             }
                           >
                             View
                           </button>
-                        ) : (
-                          "-"
-                        )}
+                        ) : "-"}
                       </td>
 
                       <td style={styles.td}>
-                        {row.DarpanPic ? (
+                        {row.StateNGODarpanPic ? (
                           <button
                             style={styles.btnOutline}
                             onClick={() =>
-                              handleViewPdf(
-                                row.DarpanPic
-                              )
+                              handleViewPdf(row.StateNGODarpanPic)
                             }
                           >
                             View
                           </button>
-                        ) : (
-                          "-"
-                        )}
+                        ) : "-"}
                       </td>
                     </tr>
                   ))
@@ -257,7 +232,7 @@ const StateNGOTable = ({ refreshTrigger }) => {
           </div>
         )}
 
-        {/* Pagination */}
+        {/* PAGINATION */}
         {filteredData.length > 0 && (
           <div
             style={{
@@ -269,13 +244,10 @@ const StateNGOTable = ({ refreshTrigger }) => {
           >
             <div>
               <label>Rows: </label>
-
               <select
                 value={rowsPerPage}
                 onChange={(e) => {
-                  setRowsPerPage(
-                    Number(e.target.value)
-                  );
+                  setRowsPerPage(Number(e.target.value));
                   setCurrentPage(1);
                 }}
               >
@@ -286,18 +258,10 @@ const StateNGOTable = ({ refreshTrigger }) => {
               </select>
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                gap: "10px",
-                alignItems: "center",
-              }}
-            >
+            <div style={{ display: "flex", gap: "10px" }}>
               <button
                 disabled={currentPage === 1}
-                onClick={() =>
-                  setCurrentPage((prev) => prev - 1)
-                }
+                onClick={() => setCurrentPage((p) => p - 1)}
                 style={styles.btnOutline}
               >
                 Prev
@@ -309,9 +273,7 @@ const StateNGOTable = ({ refreshTrigger }) => {
 
               <button
                 disabled={currentPage === totalPages}
-                onClick={() =>
-                  setCurrentPage((prev) => prev + 1)
-                }
+                onClick={() => setCurrentPage((p) => p + 1)}
                 style={styles.btnOutline}
               >
                 Next
